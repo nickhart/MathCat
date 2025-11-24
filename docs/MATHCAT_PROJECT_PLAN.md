@@ -1,4 +1,5 @@
 # MathCat - Interactive Math Learning App
+
 ## Project Plan for Claude Code
 
 ---
@@ -8,6 +9,7 @@
 **MathCat** is an interactive web-based math learning application designed for elementary students (grades 3-5) to practice and master multiplication, division, and related concepts through multiple solving methods. The app features a cat-themed interface with puns and imagery, making math practice engaging and fun.
 
 ### Key Goals
+
 - Provide interactive practice for multi-digit multiplication and division
 - Support multiple solving methods (classic algorithm, partial products, area model)
 - Enable teachers/parents to create custom worksheets via shareable URLs
@@ -130,83 +132,87 @@ mathcat/
 ## Core Data Types
 
 ### Problem Types
-```typescript
-type Operation = 'multiplication' | 'division' | 'fraction-decimal' | 'decimal-fraction';
 
-type DifficultyLevel = 'easy' | 'medium' | 'hard' | 'bonkers';
+```typescript
+type Operation = "multiplication" | "division" | "fraction-decimal" | "decimal-fraction"
+
+type DifficultyLevel = "easy" | "medium" | "hard" | "bonkers"
 
 interface Problem {
-  id: string;
-  operation: Operation;
-  operands: number[];
-  difficulty: DifficultyLevel;
-  correctAnswer: number | string;
+  id: string
+  operation: Operation
+  operands: number[]
+  difficulty: DifficultyLevel
+  correctAnswer: number | string
 }
 
 interface ProblemState {
-  problemId: string;
-  currentMethod: SolvingMethod;
-  userInputs: Record<string, any>;
-  isComplete: boolean;
-  isCorrect: boolean | null;
+  problemId: string
+  currentMethod: SolvingMethod
+  userInputs: Record<string, any>
+  isComplete: boolean
+  isCorrect: boolean | null
 }
 ```
 
 ### Solving Methods
+
 ```typescript
-type SolvingMethod = 
-  | 'classic-algorithm'
-  | 'partial-products'
-  | 'area-model'
-  | 'long-division'
-  | 'short-division';
+type SolvingMethod =
+  | "classic-algorithm"
+  | "partial-products"
+  | "area-model"
+  | "long-division"
+  | "short-division"
 
 interface MethodConfig {
-  id: SolvingMethod;
-  name: string;
-  description: string;
-  supportedOperations: Operation[];
-  component: React.ComponentType<MethodProps>;
+  id: SolvingMethod
+  name: string
+  description: string
+  supportedOperations: Operation[]
+  component: React.ComponentType<MethodProps>
 }
 ```
 
 ### Worksheet Structure
+
 ```typescript
 interface Worksheet {
-  id: string;
-  title: string;
-  description?: string;
-  problems: Problem[];
-  createdAt: string;
-  settings: WorksheetSettings;
+  id: string
+  title: string
+  description?: string
+  problems: Problem[]
+  createdAt: string
+  settings: WorksheetSettings
 }
 
 interface WorksheetSettings {
-  showMethodSelector: boolean;
-  allowedMethods: SolvingMethod[];
-  showHints: boolean;
-  timeLimit?: number;
+  showMethodSelector: boolean
+  allowedMethods: SolvingMethod[]
+  showHints: boolean
+  timeLimit?: number
 }
 
 interface WorksheetState {
-  worksheetId: string;
-  problemStates: Record<string, ProblemState>;
-  currentProblemIndex: number;
-  startedAt: string;
-  completedAt?: string;
+  worksheetId: string
+  problemStates: Record<string, ProblemState>
+  currentProblemIndex: number
+  startedAt: string
+  completedAt?: string
 }
 ```
 
 ### Progress Tracking
+
 ```typescript
 interface ProgressStats {
-  exercisesCompleted: number;
-  worksheetsCompleted: number;
+  exercisesCompleted: number
+  worksheetsCompleted: number
   currentWorksheet?: {
-    id: string;
-    state: WorksheetState;
-  };
-  lastAccessed: string;
+    id: string
+    state: WorksheetState
+  }
+  lastAccessed: string
 }
 ```
 
@@ -215,6 +221,7 @@ interface ProgressStats {
 ## Phase 1: Foundation & Setup
 
 ### 1.1 Project Initialization
+
 - [ ] Initialize Next.js project with TypeScript and App Router
 - [ ] Set up pnpm workspace
 - [ ] Configure Tailwind CSS
@@ -226,7 +233,9 @@ interface ProgressStats {
 - [ ] Create initial project structure (folders as outlined above)
 
 ### 1.2 Quality Gates
+
 Create scripts in `package.json`:
+
 ```json
 {
   "scripts": {
@@ -251,6 +260,7 @@ Create scripts in `package.json`:
 Pre-commit hook should run: `pnpm run validate`
 
 ### 1.3 Documentation Setup
+
 - [ ] Create professional README.md with badges
 - [ ] Create docs/STATUS.md for tracking development progress
 - [ ] Create docs/CONTRIBUTING.md
@@ -266,71 +276,83 @@ Build reusable math UI components with Storybook stories for each.
 ### 2.1 Basic Math Components
 
 #### EquationEditor
+
 Interactive equation display with editable blanks.
+
 ```typescript
 interface EquationEditorProps {
-  operands: (number | null)[];
-  operator: '+' | '-' | '×' | '÷';
-  result?: number | null;
-  editableIndices?: number[];
-  onChange?: (index: number, value: number) => void;
+  operands: (number | null)[]
+  operator: "+" | "-" | "×" | "÷"
+  result?: number | null
+  editableIndices?: number[]
+  onChange?: (index: number, value: number) => void
 }
 ```
 
 **Features**:
+
 - Render left-to-right equation
 - Support blank spaces for user input
 - Configurable operator symbol
 - Accessible input fields with labels
 
 **Storybook Stories**:
+
 - Simple equation (3 + 5 = 8)
-- Equation with blanks (3 + __ = 8)
-- Multi-digit equation (123 × 45 = ____)
+- Equation with blanks (3 + \_\_ = 8)
+- Multi-digit equation (123 × 45 = \_\_\_\_)
 
 #### DigitGrid
+
 Grid-based input for multi-digit arithmetic with place value alignment.
+
 ```typescript
 interface DigitGridProps {
-  rows: number;
-  cols: number;
-  values: (number | null)[][];
-  editablePositions?: [row: number, col: number][];
-  onChange?: (row: number, col: number, value: number) => void;
-  showPlaceValues?: boolean;
+  rows: number
+  cols: number
+  values: (number | null)[][]
+  editablePositions?: [row: number, col: number][]
+  onChange?: (row: number, col: number, value: number) => void
+  showPlaceValues?: boolean
 }
 ```
 
 **Features**:
+
 - Align digits by place value (ones, tens, hundreds)
 - Support empty cells for user input
 - Optional place value labels
 - Keyboard navigation (arrow keys, tab)
 
 **Storybook Stories**:
+
 - Basic 2×3 grid
 - Editable grid with some pre-filled values
 - Grid with place value labels
 
 #### CarryIndicator
+
 Small superscript indicator for "carry" digits in addition/multiplication.
+
 ```typescript
 interface CarryIndicatorProps {
-  value: number | null;
-  position: 'above' | 'below';
-  visible: boolean;
-  editable?: boolean;
-  onChange?: (value: number) => void;
+  value: number | null
+  position: "above" | "below"
+  visible: boolean
+  editable?: boolean
+  onChange?: (value: number) => void
 }
 ```
 
 **Features**:
+
 - Superscript styling
 - Positioned above or below main digit
 - Optional editing
 - Fade in/out animation
 
 **Storybook Stories**:
+
 - Static carry indicator
 - Editable carry indicator
 - Animated appearance
@@ -338,16 +360,19 @@ interface CarryIndicatorProps {
 ### 2.2 Multiplication Method Components
 
 #### MultiplicationClassic
+
 Traditional algorithm (multiply each digit, carry, add).
+
 ```typescript
 interface MultiplicationClassicProps {
-  multiplicand: number;
-  multiplier: number;
-  onComplete?: (isCorrect: boolean) => void;
+  multiplicand: number
+  multiplier: number
+  onComplete?: (isCorrect: boolean) => void
 }
 ```
 
 **Features**:
+
 - Vertical layout with proper alignment
 - Editable intermediate products
 - Carry indicators
@@ -355,21 +380,25 @@ interface MultiplicationClassicProps {
 - Final answer row
 
 **Storybook Stories**:
+
 - Empty problem (123 × 45)
 - Partially completed
 - Completed with validation
 
 #### MultiplicationPartialProducts
+
 Break down multiplication into partial products by place value.
+
 ```typescript
 interface MultiplicationPartialProductsProps {
-  multiplicand: number;
-  multiplier: number;
-  onComplete?: (isCorrect: boolean) => void;
+  multiplicand: number
+  multiplier: number
+  onComplete?: (isCorrect: boolean) => void
 }
 ```
 
 **Features**:
+
 - Show each partial product separately
 - Highlight place value (ones, tens, hundreds)
 - Editable partial products
@@ -377,21 +406,25 @@ interface MultiplicationPartialProductsProps {
 - Visual grouping
 
 **Storybook Stories**:
+
 - Empty problem
 - Partially completed
 - Completed with validation
 
 #### MultiplicationAreaModel
+
 Visual grid-based area representation.
+
 ```typescript
 interface MultiplicationAreaModelProps {
-  multiplicand: number;
-  multiplier: number;
-  onComplete?: (isCorrect: boolean) => void;
+  multiplicand: number
+  multiplier: number
+  onComplete?: (isCorrect: boolean) => void
 }
 ```
 
 **Features**:
+
 - Grid divided by place values
 - Each section shows partial area
 - Labels for dimensions
@@ -399,6 +432,7 @@ interface MultiplicationAreaModelProps {
 - Sum of all areas
 
 **Storybook Stories**:
+
 - Empty model
 - Partially completed
 - Completed with validation
@@ -406,22 +440,26 @@ interface MultiplicationAreaModelProps {
 ### 2.3 Division Components
 
 #### DivisionClassic
+
 Long division algorithm.
+
 ```typescript
 interface DivisionClassicProps {
-  dividend: number;
-  divisor: number;
-  onComplete?: (isCorrect: boolean) => void;
+  dividend: number
+  divisor: number
+  onComplete?: (isCorrect: boolean) => void
 }
 ```
 
 **Features**:
+
 - Traditional long division layout
 - Steps: divide, multiply, subtract, bring down
 - Editable at each step
 - Remainder display
 
 **Storybook Stories**:
+
 - Empty problem
 - Partially completed
 - Completed with validation
@@ -432,31 +470,34 @@ interface DivisionClassicProps {
 ## Phase 3: Problem Generation & Validation
 
 ### 3.1 Problem Generator
+
 ```typescript
 // lib/math/problem-generator.ts
 
 interface GeneratorConfig {
-  operation: Operation;
-  difficulty: DifficultyLevel;
-  count: number;
+  operation: Operation
+  difficulty: DifficultyLevel
+  count: number
   customRange?: {
-    minDigits: number;
-    maxDigits: number;
-  };
+    minDigits: number
+    maxDigits: number
+  }
 }
 
-function generateProblems(config: GeneratorConfig): Problem[];
-function generateMultiplication(difficulty: DifficultyLevel): Problem;
-function generateDivision(difficulty: DifficultyLevel): Problem;
+function generateProblems(config: GeneratorConfig): Problem[]
+function generateMultiplication(difficulty: DifficultyLevel): Problem
+function generateDivision(difficulty: DifficultyLevel): Problem
 ```
 
 **Difficulty Mapping**:
+
 - **Easy**: 1-2 digits × 1 digit, 2 digits ÷ 1 digit
 - **Medium**: 2-3 digits × 2 digits, 3 digits ÷ 1-2 digits
 - **Hard**: 3-4 digits × 2-3 digits, 4 digits ÷ 2 digits
 - **Bonkers**: 4+ digits × 3+ digits, 5+ digits ÷ 2-3 digits
 
 ### 3.2 Solution Validator
+
 ```typescript
 // lib/math/solution-validator.ts
 
@@ -464,28 +505,30 @@ function validateSolution(
   problem: Problem,
   method: SolvingMethod,
   userInputs: Record<string, any>
-): ValidationResult;
+): ValidationResult
 
 interface ValidationResult {
-  isCorrect: boolean;
-  errors?: ValidationError[];
+  isCorrect: boolean
+  errors?: ValidationError[]
 }
 
 interface ValidationError {
-  field: string;
-  expected: any;
-  actual: any;
-  message: string;
+  field: string
+  expected: any
+  actual: any
+  message: string
 }
 ```
 
 **Method-Specific Validation**:
+
 - Classic: Check intermediate products, carries, final sum
 - Partial Products: Validate each partial product and sum
 - Area Model: Verify each area section and total
 - Long Division: Validate each step (quotient digits, subtractions, remainders)
 
 ### 3.3 Unit Tests
+
 - [ ] Test problem generation for each difficulty level
 - [ ] Test validation logic for each solving method
 - [ ] Test edge cases (single digit, large numbers, remainders)
@@ -496,58 +539,61 @@ interface ValidationError {
 ## Phase 4: Local Storage & Progress Tracking
 
 ### 4.1 Storage Utilities
+
 ```typescript
 // lib/storage/local-storage.ts
 
 const STORAGE_KEYS = {
-  PROGRESS: 'mathcat_progress',
-  CURRENT_WORKSHEET: 'mathcat_current_worksheet',
-} as const;
+  PROGRESS: "mathcat_progress",
+  CURRENT_WORKSHEET: "mathcat_current_worksheet",
+} as const
 
-function saveProgress(stats: ProgressStats): void;
-function loadProgress(): ProgressStats | null;
-function saveWorksheetState(state: WorksheetState): void;
-function loadWorksheetState(): WorksheetState | null;
-function clearStorage(): void;
+function saveProgress(stats: ProgressStats): void
+function loadProgress(): ProgressStats | null
+function saveWorksheetState(state: WorksheetState): void
+function loadWorksheetState(): WorksheetState | null
+function clearStorage(): void
 ```
 
 ### 4.2 Progress Context
+
 ```typescript
 // contexts/ProgressContext.tsx
 
 interface ProgressContextValue {
-  stats: ProgressStats;
-  incrementExercises: () => void;
-  incrementWorksheets: () => void;
-  saveCurrentWorksheet: (worksheet: Worksheet, state: WorksheetState) => void;
-  clearCurrentWorksheet: () => void;
+  stats: ProgressStats
+  incrementExercises: () => void
+  incrementWorksheets: () => void
+  saveCurrentWorksheet: (worksheet: Worksheet, state: WorksheetState) => void
+  clearCurrentWorksheet: () => void
 }
 
-export function ProgressProvider({ children }: PropsWithChildren);
-export function useProgress(): ProgressContextValue;
+export function ProgressProvider({ children }: PropsWithChildren)
+export function useProgress(): ProgressContextValue
 ```
 
 ### 4.3 Worksheet Context
+
 ```typescript
 // contexts/WorksheetContext.tsx
 
 interface WorksheetContextValue {
-  worksheet: Worksheet | null;
-  worksheetState: WorksheetState | null;
-  currentProblem: Problem | null;
-  currentProblemState: ProblemState | null;
-  goToNextProblem: () => void;
-  goToPreviousProblem: () => void;
-  goToProblem: (index: number) => void;
-  updateProblemState: (updates: Partial<ProblemState>) => void;
-  submitWorksheet: () => void;
+  worksheet: Worksheet | null
+  worksheetState: WorksheetState | null
+  currentProblem: Problem | null
+  currentProblemState: ProblemState | null
+  goToNextProblem: () => void
+  goToPreviousProblem: () => void
+  goToProblem: (index: number) => void
+  updateProblemState: (updates: Partial<ProblemState>) => void
+  submitWorksheet: () => void
 }
 
-export function WorksheetProvider({ 
-  worksheet, 
-  children 
-}: PropsWithChildren<{ worksheet: Worksheet }>);
-export function useWorksheet(): WorksheetContextValue;
+export function WorksheetProvider({
+  worksheet,
+  children,
+}: PropsWithChildren<{ worksheet: Worksheet }>)
+export function useWorksheet(): WorksheetContextValue
 ```
 
 ---
@@ -555,42 +601,46 @@ export function useWorksheet(): WorksheetContextValue;
 ## Phase 5: Worksheet URL Encoding
 
 ### 5.1 Encoding/Decoding Utilities
+
 ```typescript
 // lib/worksheet/encoder.ts
 
-function encodeWorksheet(worksheet: Worksheet): string;
-function decodeWorksheet(encoded: string): Worksheet | null;
+function encodeWorksheet(worksheet: Worksheet): string
+function decodeWorksheet(encoded: string): Worksheet | null
 ```
 
 **Implementation**:
+
 1. Normalize JSON (sort keys, remove whitespace)
 2. Compress with LZ-string or similar
 3. Base64 encode
 4. URL-safe encoding (replace +, /, =)
 
 ### 5.2 Compression
+
 ```typescript
 // lib/worksheet/compressor.ts
 
-function compress(data: string): string;
-function decompress(data: string): string | null;
+function compress(data: string): string
+function decompress(data: string): string | null
 ```
 
 Consider using `lz-string` package for client-side compression.
 
 ### 5.3 Schema Validation
+
 ```typescript
 // lib/worksheet/schema.ts
 
-import { z } from 'zod';
+import { z } from "zod"
 
 export const ProblemSchema = z.object({
   id: z.string(),
-  operation: z.enum(['multiplication', 'division', 'fraction-decimal', 'decimal-fraction']),
+  operation: z.enum(["multiplication", "division", "fraction-decimal", "decimal-fraction"]),
   operands: z.array(z.number()),
-  difficulty: z.enum(['easy', 'medium', 'hard', 'bonkers']),
+  difficulty: z.enum(["easy", "medium", "hard", "bonkers"]),
   correctAnswer: z.union([z.number(), z.string()]),
-});
+})
 
 export const WorksheetSchema = z.object({
   id: z.string(),
@@ -604,7 +654,7 @@ export const WorksheetSchema = z.object({
     showHints: z.boolean(),
     timeLimit: z.number().optional(),
   }),
-});
+})
 ```
 
 Use Zod for runtime validation of decoded worksheets.
@@ -614,7 +664,9 @@ Use Zod for runtime validation of decoded worksheets.
 ## Phase 6: Pages & User Flows
 
 ### 6.1 Home Page (`app/page.tsx`)
+
 **Features**:
+
 - Welcome message with cat theme
 - Quick start options:
   - Generate random practice problems
@@ -624,12 +676,15 @@ Use Zod for runtime validation of decoded worksheets.
 - Display progress stats (if any)
 
 **Cat Puns Ideas**:
+
 - "Purr-fect your math skills!"
 - "Time to multiply the fun!"
 - "Let's paws and practice!"
 
 ### 6.2 Practice Mode (`app/practice/page.tsx`)
+
 **Features**:
+
 - Select operation type
 - Choose difficulty level
 - Select number of problems
@@ -637,12 +692,15 @@ Use Zod for runtime validation of decoded worksheets.
 - Generate and start practice session
 
 **Flow**:
+
 1. Configuration screen
 2. Generate problems
 3. Navigate to worksheet viewer with generated worksheet
 
 ### 6.3 Worksheet Viewer (`app/worksheet/[id]/page.tsx`)
+
 **Features**:
+
 - Display current problem
 - Method selector (tabs or dropdown)
 - Interactive solving interface (switches based on selected method)
@@ -652,6 +710,7 @@ Use Zod for runtime validation of decoded worksheets.
 - Review mode (after submission)
 
 **Layout**:
+
 ```
 ┌─────────────────────────────────────────┐
 │  Header: Problem 3 of 10                │
@@ -669,12 +728,15 @@ Use Zod for runtime validation of decoded worksheets.
 ```
 
 **Accessibility**:
+
 - Keyboard shortcuts: Arrow keys for navigation, Tab for inputs
 - Screen reader announcements for problem changes
 - Focus management when switching problems
 
 ### 6.4 Worksheet Creator (`app/create/page.tsx`)
+
 **Features**:
+
 - Worksheet title and description
 - Add problems:
   - Manual entry (operands)
@@ -686,6 +748,7 @@ Use Zod for runtime validation of decoded worksheets.
 - "Duplicate & Edit" feature (pre-populate from existing URL)
 
 **Flow**:
+
 1. Enter worksheet metadata
 2. Add problems (manual or generated)
 3. Configure settings
@@ -694,7 +757,9 @@ Use Zod for runtime validation of decoded worksheets.
 6. Share
 
 ### 6.5 Review Mode
+
 **Features**:
+
 - Show all problems with user answers
 - Highlight correct/incorrect
 - Allow corrections
@@ -707,8 +772,10 @@ Use Zod for runtime validation of decoded worksheets.
 ## Phase 7: Styling & Theme
 
 ### 7.1 shadcn/ui Configuration
+
 - Use purple as primary color
 - Configure in `tailwind.config.ts`:
+
 ```typescript
 colors: {
   primary: {
@@ -720,6 +787,7 @@ colors: {
 ```
 
 ### 7.2 Cat Theme Assets
+
 - Cat logo/icon
 - Cat illustrations for:
   - Success states
@@ -728,6 +796,7 @@ colors: {
 - Cat-themed success messages with puns
 
 ### 7.3 Responsive Design
+
 - Optimize for landscape tablets (11"+)
 - Minimum width: 1024px (iPad landscape)
 - Secondary support for portrait mode
@@ -738,7 +807,9 @@ colors: {
 ## Phase 8: Testing Strategy
 
 ### 8.1 Unit Tests
+
 **Components** (`__tests__/components/`):
+
 - [ ] EquationEditor: rendering, editing, validation
 - [ ] DigitGrid: keyboard navigation, editing, accessibility
 - [ ] CarryIndicator: visibility, editing
@@ -746,18 +817,21 @@ colors: {
 - [ ] Division components
 
 **Utilities** (`__tests__/lib/`):
+
 - [ ] Problem generator: all difficulty levels, edge cases
 - [ ] Solution validator: each method, error cases
 - [ ] Storage utilities: save/load, edge cases
 - [ ] Encoding utilities: encode/decode round-trip
 
 ### 8.2 Integration Tests (`__tests__/integration/`)
+
 - [ ] Complete problem solving flow
 - [ ] Worksheet navigation
 - [ ] Progress tracking
 - [ ] URL encoding/decoding with real worksheets
 
 ### 8.3 Coverage Goals
+
 - Aim for >80% code coverage
 - 100% coverage for math validation logic
 - Focus on critical paths (problem solving, validation)
@@ -767,7 +841,9 @@ colors: {
 ## Phase 9: Deployment & CI/CD
 
 ### 9.1 GitHub Actions
+
 Create `.github/workflows/ci.yml`:
+
 ```yaml
 name: CI
 
@@ -783,8 +859,8 @@ jobs:
           version: 8
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          cache: 'pnpm'
+          node-version: "18"
+          cache: "pnpm"
       - run: pnpm install
       - run: pnpm run type-check
       - run: pnpm run lint
@@ -794,6 +870,7 @@ jobs:
 ```
 
 ### 9.2 Vercel Deployment
+
 - Connect GitHub repo to Vercel
 - Configure build settings:
   - Build command: `pnpm run build`
@@ -807,6 +884,7 @@ jobs:
 ## Phase 10: Future Enhancements (Post-MVP)
 
 ### 10.1 Additional Features
+
 - [ ] Fraction operations (add, subtract, multiply, divide)
 - [ ] Converting between fractions and decimals
 - [ ] Decimal operations
@@ -816,6 +894,7 @@ jobs:
 - [ ] Print-friendly view for worksheets
 
 ### 10.2 User Profiles & Cloud Storage
+
 - [ ] Simple authentication (email/password)
 - [ ] Cloud storage for progress
 - [ ] User dashboard
@@ -823,6 +902,7 @@ jobs:
 - [ ] Saved worksheets library
 
 ### 10.3 Enhanced Sharing
+
 - [ ] QR code generation for worksheet URLs
 - [ ] Teacher dashboard for classroom management
 - [ ] Class-wide worksheet assignment
@@ -848,7 +928,7 @@ jobs:
 
 ## README.md Template
 
-```markdown
+````markdown
 # 🐱 MathCat
 
 [![CI](https://github.com/[username]/mathcat/workflows/CI/badge.svg)](https://github.com/[username]/mathcat/actions)
@@ -879,6 +959,7 @@ pnpm dev
 
 # Open http://localhost:3000
 ```
+````
 
 ## 📋 Requirements
 
@@ -955,7 +1036,8 @@ Created with ❤️ for students learning math. Inspired by 3rd-5th grade curric
 ---
 
 **MathCat** - Time to multiply the fun! 🎉
-```
+
+````
 
 ---
 
@@ -1045,13 +1127,14 @@ Last Updated: [Date]
 ## Notes 📝
 
 [Any important development notes]
-```
+````
 
 ---
 
 ## Key Implementation Notes
 
 ### Accessibility Checklist
+
 - [ ] All interactive elements have labels
 - [ ] Keyboard navigation works throughout
 - [ ] Focus states are visible
@@ -1061,18 +1144,21 @@ Last Updated: [Date]
 - [ ] ARIA labels where needed
 
 ### Performance Considerations
+
 - Use React.memo for expensive components
 - Lazy load method components
 - Optimize Storybook build size
 - Consider code splitting for worksheet creator
 
 ### Testing Best Practices
+
 - Use data-testid sparingly (prefer accessible queries)
 - Test user behavior, not implementation
 - Mock localStorage in tests
 - Use MSW for any future API mocking
 
 ### Git Workflow
+
 - Main branch is protected
 - Feature branches: `feature/description`
 - Bug fixes: `fix/description`
@@ -1085,6 +1171,7 @@ Last Updated: [Date]
 ## Success Metrics
 
 **MVP is complete when**:
+
 1. All three multiplication methods work end-to-end
 2. One division method implemented
 3. Worksheet creator generates shareable URLs
@@ -1109,10 +1196,14 @@ Last Updated: [Date]
 ## Contact & Collaboration
 
 This project is designed to be built collaboratively with Claude Code. Each component, utility, and page should be built incrementally with:
+
 - Clear interfaces defined first
 - Tests written alongside code
 - Storybook stories for visual components
 - Documentation updated as we go
 
 Let's make math fun, one cat pun at a time! 🐱✨
+
+```
+
 ```
