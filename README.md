@@ -1,11 +1,17 @@
 # 🐱 MathCat
 
-[![CI](https://github.com/[username]/MathCat/workflows/CI/badge.svg)](https://github.com/[username]/MathCat/actions)
+[![CI](https://github.com/nickhart/MathCat/workflows/CI/badge.svg)](https://github.com/nickhart/MathCat/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14+-black.svg)](https://nextjs.org/)
 
 > Purr-fect your math skills! An interactive learning platform for elementary students to master multiplication, division, and more.
+
+## 🌐 Try It Live
+
+**[Launch MathCat →](https://math-cat-phi.vercel.app)**
+
+Try the interactive demo at [math-cat-phi.vercel.app/demo](https://math-cat-phi.vercel.app/demo)
 
 ## ✨ Features
 
@@ -91,7 +97,7 @@ Contributions are welcome! Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) f
 
 ## 💬 Support
 
-Found a bug? Have a feature request? [Open an issue](https://github.com/[username]/MathCat/issues)!
+Found a bug? Have a feature request? [Open an issue](https://github.com/nickhart/MathCat/issues)!
 
 ## 📄 License
 

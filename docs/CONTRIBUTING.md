@@ -282,7 +282,7 @@ MathCat/
 
 ## Questions?
 
-- Check existing [Issues](https://github.com/[username]/MathCat/issues)
+- Check existing [Issues](https://github.com/nickhart/MathCat/issues)
 - Review the [Architecture](ARCHITECTURE.md) docs
 - Ask questions in pull request comments
 

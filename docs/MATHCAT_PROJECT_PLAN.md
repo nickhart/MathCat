@@ -931,7 +931,7 @@ jobs:
 ````markdown
 # 🐱 MathCat
 
-[![CI](https://github.com/[username]/mathcat/workflows/CI/badge.svg)](https://github.com/[username]/mathcat/actions)
+[![CI](https://github.com/nickhart/MathCat/workflows/CI/badge.svg)](https://github.com/nickhart/MathCat/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14+-black.svg)](https://nextjs.org/)
@@ -1023,7 +1023,7 @@ Contributions are welcome! Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) f
 
 ## 💬 Support
 
-Found a bug? Have a feature request? [Open an issue](https://github.com/[username]/mathcat/issues)!
+Found a bug? Have a feature request? [Open an issue](https://github.com/nickhart/MathCat/issues)!
 
 ## 📄 License
 
