@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { MultiplicationPartialProducts } from "@/components/math/MultiplicationPartialProducts"
+import { MultiplicationPartialProductsColumnar } from "@/components/math/MultiplicationPartialProductsColumnar"
 import { MultiplicationAreaModel } from "@/components/math/MultiplicationAreaModel"
 
 const PRESET_PROBLEMS = [
@@ -22,6 +23,7 @@ export default function DemoPage() {
   const [customMultiplicand, setCustomMultiplicand] = useState("23")
   const [customMultiplier, setCustomMultiplier] = useState("45")
   const [showValidation, setShowValidation] = useState(false)
+  const [useColumnar, setUseColumnar] = useState(false)
 
   const handlePresetChange = (preset: (typeof PRESET_PROBLEMS)[0]) => {
     setMultiplicand(preset.multiplicand)
@@ -106,6 +108,26 @@ export default function DemoPage() {
             </p>
           </div>
 
+          {/* Columnar layout toggle (for Partial Products) */}
+          {method === "partial-products" && (
+            <div>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={useColumnar}
+                  onChange={(e) => setUseColumnar(e.target.checked)}
+                  className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                />
+                <span className="text-sm font-semibold">
+                  Use columnar layout (traditional arithmetic format)
+                </span>
+              </label>
+              <p className="text-xs text-muted-foreground mt-1 ml-8">
+                Digit-by-digit inputs with carry boxes - easier to add up!
+              </p>
+            </div>
+          )}
+
           {/* Preset problems */}
           <div>
             <label className="block text-sm font-semibold mb-2">Preset Problems:</label>
@@ -165,9 +187,18 @@ export default function DemoPage() {
 
         {/* Current problem display */}
         <div className="bg-card border rounded-lg p-8">
-          {method === "partial-products" && (
+          {method === "partial-products" && !useColumnar && (
             <MultiplicationPartialProducts
               key={`pp-${multiplicand}-${multiplier}`}
+              multiplicand={multiplicand}
+              multiplier={multiplier}
+              showValidation={showValidation}
+            />
+          )}
+
+          {method === "partial-products" && useColumnar && (
+            <MultiplicationPartialProductsColumnar
+              key={`ppc-${multiplicand}-${multiplier}`}
               multiplicand={multiplicand}
               multiplier={multiplier}
               showValidation={showValidation}
