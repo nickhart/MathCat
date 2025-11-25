@@ -169,7 +169,7 @@ export function MultiplicationPartialProductsColumnar({
                         "border-green-500 bg-green-50",
                       showValidation && isFilled && !isCorrectValue && "border-red-500 bg-red-50"
                     )}
-                    style={{ maxWidth: `${(maxDigits + 2) * 0.6}rem` }}
+                    style={{ width: `calc(${maxDigits + 2}ch + 1.5rem)` }}
                     placeholder="?"
                   />
                 </div>
@@ -180,8 +180,8 @@ export function MultiplicationPartialProductsColumnar({
             <div className="flex items-center gap-3 my-4">
               <div className="w-32" />
               <div
-                className="flex-1 border-t-2 border-gray-800"
-                style={{ maxWidth: `${(maxDigits + 2) * 0.6}rem` }}
+                className="border-t-2 border-gray-800"
+                style={{ width: `calc(${maxDigits + 2}ch + 1.5rem)` }}
               />
             </div>
 
@@ -206,7 +206,7 @@ export function MultiplicationPartialProductsColumnar({
                     parseInt(sumInput) !== expectedSum &&
                     "border-red-500 bg-red-50"
                 )}
-                style={{ maxWidth: `${(maxDigits + 2) * 0.6}rem` }}
+                style={{ width: `calc(${maxDigits + 2}ch + 1.5rem)` }}
                 placeholder="?"
               />
             </div>
