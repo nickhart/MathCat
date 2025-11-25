@@ -8,6 +8,7 @@ export interface MultiplicationAreaModelProps {
   multiplicand: number
   multiplier: number
   onComplete?: (isCorrect: boolean) => void
+  showValidation?: boolean
   className?: string
 }
 
@@ -23,6 +24,7 @@ export function MultiplicationAreaModel({
   multiplicand,
   multiplier,
   onComplete,
+  showValidation = true,
   className,
 }: MultiplicationAreaModelProps) {
   // Break number into place value components
@@ -185,8 +187,14 @@ export function MultiplicationAreaModel({
                         className={cn(
                           "w-full px-2 py-1 text-center font-mono text-lg border-2 rounded",
                           "focus:outline-none focus:ring-2 focus:ring-primary",
-                          isFilled && isCorrectValue && "border-green-500 bg-green-50",
-                          isFilled && !isCorrectValue && "border-red-500 bg-red-50"
+                          showValidation &&
+                            isFilled &&
+                            isCorrectValue &&
+                            "border-green-500 bg-green-50",
+                          showValidation &&
+                            isFilled &&
+                            !isCorrectValue &&
+                            "border-red-500 bg-red-50"
                         )}
                         placeholder="?"
                       />
@@ -208,10 +216,12 @@ export function MultiplicationAreaModel({
               className={cn(
                 "w-40 px-3 py-2 text-lg font-mono border-2 rounded-md font-semibold",
                 "focus:outline-none focus:ring-2 focus:ring-primary",
-                sumInput.trim() !== "" &&
+                showValidation &&
+                  sumInput.trim() !== "" &&
                   parseInt(sumInput) === expectedSum &&
                   "border-green-500 bg-green-50",
-                sumInput.trim() !== "" &&
+                showValidation &&
+                  sumInput.trim() !== "" &&
                   parseInt(sumInput) !== expectedSum &&
                   "border-red-500 bg-red-50"
               )}

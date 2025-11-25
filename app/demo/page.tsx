@@ -21,6 +21,7 @@ export default function DemoPage() {
   const [multiplier, setMultiplier] = useState(45)
   const [customMultiplicand, setCustomMultiplicand] = useState("23")
   const [customMultiplier, setCustomMultiplier] = useState("45")
+  const [showValidation, setShowValidation] = useState(false)
 
   const handlePresetChange = (preset: (typeof PRESET_PROBLEMS)[0]) => {
     setMultiplicand(preset.multiplicand)
@@ -87,6 +88,24 @@ export default function DemoPage() {
             </div>
           </div>
 
+          {/* Validation toggle */}
+          <div>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showValidation}
+                onChange={(e) => setShowValidation(e.target.checked)}
+                className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+              />
+              <span className="text-sm font-semibold">
+                Show validation feedback (green/red borders)
+              </span>
+            </label>
+            <p className="text-xs text-muted-foreground mt-1 ml-8">
+              Turn this on to see immediate feedback as you type
+            </p>
+          </div>
+
           {/* Preset problems */}
           <div>
             <label className="block text-sm font-semibold mb-2">Preset Problems:</label>
@@ -151,6 +170,7 @@ export default function DemoPage() {
               key={`pp-${multiplicand}-${multiplier}`}
               multiplicand={multiplicand}
               multiplier={multiplier}
+              showValidation={showValidation}
             />
           )}
 
@@ -159,6 +179,7 @@ export default function DemoPage() {
               key={`am-${multiplicand}-${multiplier}`}
               multiplicand={multiplicand}
               multiplier={multiplier}
+              showValidation={showValidation}
             />
           )}
         </div>
