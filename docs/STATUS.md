@@ -2,7 +2,7 @@
 
 Last Updated: 2024-11-24
 
-## Current Phase: Phase 1 - Foundation & Setup ✅
+## Current Phase: Phase 2 - Core Components 🚧
 
 ## Completed ✅
 
@@ -20,16 +20,27 @@ Last Updated: 2024-11-24
 - [x] Package.json scripts configured
 - [x] Core type definitions created (math, worksheet, progress)
 - [x] Documentation scaffolding (README, STATUS, CONTRIBUTING, ARCHITECTURE, METHODS)
+- [x] GitHub Actions CI/CD workflow
+- [x] Vercel deployment configured
 
-### Phase 2: Core Components
+### Phase 2: Core Components (Partial)
 
-- [ ] EquationEditor + Stories
-- [ ] DigitGrid + Stories
-- [ ] CarryIndicator + Stories
-- [ ] MultiplicationClassic + Stories
-- [ ] MultiplicationPartialProducts + Stories
-- [ ] MultiplicationAreaModel + Stories
-- [ ] DivisionClassic + Stories
+- [x] CatValidator component with three states (thinking/correct/wrong) + Stories
+- [x] MultiplicationPartialProducts component (standard layout) + Stories
+- [x] MultiplicationPartialProductsColumnar component (columnar layout) + Stories
+- [x] MultiplicationAreaModel component + Stories
+- [x] Demo page at /demo with method toggle, preset problems, and validation toggle
+- [x] Support for 2-4 digit multiplication problems
+- [x] Real-time validation with optional green/red feedback
+- [x] Cat-themed visual feedback using provided assets
+
+#### Still Todo in Phase 2:
+
+- [ ] Refine carry digit alignment in columnar layout
+- [ ] EquationEditor component
+- [ ] DigitGrid component
+- [ ] MultiplicationClassic component
+- [ ] DivisionClassic component
 
 ### Phase 3: Problem Generation
 
@@ -81,25 +92,35 @@ Last Updated: 2024-11-24
 
 ## In Progress 🚧
 
-Ready to start Phase 2: Core Components
+Working through Phase 2: Core Components
+
+### Recently Completed:
+
+- ✅ Initial multiplication components with cat validator feedback
+- ✅ Columnar layout for Partial Products method
+- ✅ Validation toggle for showing/hiding feedback
+- ✅ Support for large numbers (up to billions in place value headers)
+
+### Currently Working On:
+
+- 🔧 Refining carry digit alignment in columnar layout to properly align with input columns
 
 ## Next Up 📅
 
-**Priority**: Build multiplication method variants (partial products and area model) as proof of concept
-
-1. Create basic math components (EquationEditor, DigitGrid, CarryIndicator)
-2. Implement MultiplicationPartialProducts component
-3. Implement MultiplicationAreaModel component
-4. Create Storybook stories for each component
-5. Add unit tests
+1. Fix carry digit column alignment in MultiplicationPartialProductsColumnar
+2. Add more comprehensive unit tests for multiplication components
+3. Implement remaining Phase 2 components (EquationEditor, DigitGrid, etc.)
+4. Build worksheet generation and problem sets
 
 ## Known Issues 🐛
 
-None currently
+- **Carry digit alignment**: Carry input boxes in columnar layout don't perfectly align with their respective columns above. Need to improve the layout algorithm to match character positions in monospace inputs.
 
 ## Notes 📝
 
 - Phase 1 successfully completed!
+- Phase 2 proof-of-concept working: multiplication methods (partial products & area model) are functional
 - All quality gates configured (type-check, lint, format, test)
-- Pre-commit hooks will run validation before each commit
-- Ready to begin building interactive math components
+- Pre-commit hooks running validation before each commit
+- Live demo deployed to Vercel: https://math-cat-phi.vercel.app
+- Cat-themed UI with three provided cat images (thinking, correct, wrong)
