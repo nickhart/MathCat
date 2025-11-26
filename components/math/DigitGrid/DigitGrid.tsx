@@ -42,6 +42,8 @@ export interface DigitGridProps {
   ariaLabel?: string
   /** Callback when a digit is entered at a specific cell index */
   onCellChange?: (index: number, value: string) => void
+  /** Callback when any cell in the grid receives focus */
+  onGridFocus?: () => void
 }
 
 export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function DigitGrid(
@@ -59,6 +61,7 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
     cellClassName,
     ariaLabel,
     onCellChange,
+    onGridFocus,
   },
   ref
 ) {
@@ -255,7 +258,12 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={(e) => handlePaste(index, e)}
             disabled={disabled}
-            onFocus={(e) => e.target.select()}
+            onFocus={(e) => {
+              e.target.select()
+              if (onGridFocus) {
+                onGridFocus()
+              }
+            }}
             className={cn(
               "w-12 h-12 text-center text-lg font-mono border-2 rounded-md",
               "focus:outline-none focus:border-primary",

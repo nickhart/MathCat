@@ -153,6 +153,14 @@ export function MultiplicationAreaModel({
     }
   }
 
+  // Handle focus on addition grid row - highlight corresponding area model cell
+  const handleAdditionRowFocus = (rowIndex: number) => {
+    const cell = gridCells[rowIndex]
+    if (cell) {
+      setSelectedCell({ row: cell.row, col: cell.col })
+    }
+  }
+
   const getCellInput = (row: number, col: number): string => {
     const key = `${row}-${col}`
     return cellInputs[key] || ""
@@ -258,6 +266,7 @@ export function MultiplicationAreaModel({
             showValidation={showValidation}
             rowInputValues={rowInputValues}
             onRowInputChange={handleAdditionRowChange}
+            onRowFocus={handleAdditionRowFocus}
           />
         </div>
       </div>

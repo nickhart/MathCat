@@ -31,6 +31,8 @@ export interface AdditionGridProps {
   rowInputValues?: Record<number, string>
   /** Optional: Callback when a row input changes */
   onRowInputChange?: (rowIndex: number, value: string) => void
+  /** Optional: Callback when a row receives focus */
+  onRowFocus?: (rowIndex: number) => void
 }
 
 export function AdditionGrid({
@@ -42,6 +44,7 @@ export function AdditionGrid({
   className,
   rowInputValues,
   onRowInputChange,
+  onRowFocus,
 }: AdditionGridProps) {
   // Ref for sum row to enable programmatic focus
   const sumRowRef = useRef<DigitGridRef>(null)
@@ -184,6 +187,7 @@ export function AdditionGrid({
                 showValidation={showValidation}
                 ariaLabel={`Row ${index + 1}: ${row.label}`}
                 className={cn(row.highlighted && "ring-2 ring-primary ring-offset-2 rounded-md")}
+                onGridFocus={() => onRowFocus?.(index)}
               />
             </div>
           )
