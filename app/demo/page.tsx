@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { MultiplicationPartialProducts } from "@/components/math/MultiplicationPartialProducts"
 import { MultiplicationPartialProductsColumnar } from "@/components/math/MultiplicationPartialProductsColumnar"
+import { MultiplicationPartialProductsGrid } from "@/components/math/MultiplicationPartialProductsGrid"
 import { MultiplicationAreaModel } from "@/components/math/MultiplicationAreaModel"
 
 const PRESET_PROBLEMS = [
@@ -15,15 +16,17 @@ const PRESET_PROBLEMS = [
 ]
 
 type MethodType = "partial-products" | "area-model"
+type LayoutType = "standard" | "columnar" | "grid"
 
 export default function DemoPage() {
   const [method, setMethod] = useState<MethodType>("partial-products")
+  const [layout, setLayout] = useState<LayoutType>("standard")
   const [multiplicand, setMultiplicand] = useState(23)
   const [multiplier, setMultiplier] = useState(45)
   const [customMultiplicand, setCustomMultiplicand] = useState("23")
   const [customMultiplier, setCustomMultiplier] = useState("45")
   const [showValidation, setShowValidation] = useState(false)
-  const [useColumnar, setUseColumnar] = useState(false)
+  const [showAllCells, setShowAllCells] = useState(false)
 
   const handlePresetChange = (preset: (typeof PRESET_PROBLEMS)[0]) => {
     setMultiplicand(preset.multiplicand)
@@ -108,22 +111,65 @@ export default function DemoPage() {
             </p>
           </div>
 
-          {/* Columnar layout toggle (for Partial Products) */}
+          {/* Layout selector (for Partial Products) */}
           {method === "partial-products" && (
+            <div>
+              <label className="block text-sm font-semibold mb-2">Layout Style:</label>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setLayout("standard")}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    layout === "standard"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted hover:bg-muted/80"
+                  }`}
+                >
+                  Standard
+                </button>
+                <button
+                  onClick={() => setLayout("columnar")}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    layout === "columnar"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted hover:bg-muted/80"
+                  }`}
+                >
+                  Columnar
+                </button>
+                <button
+                  onClick={() => setLayout("grid")}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    layout === "grid"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted hover:bg-muted/80"
+                  }`}
+                >
+                  Grid
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {layout === "standard" && "Single input field per partial product"}
+                {layout === "columnar" &&
+                  "Single input with alignment - uses character width measurement"}
+                {layout === "grid" && "Individual digit cells with keyboard navigation"}
+              </p>
+            </div>
+          )}
+
+          {/* Show all cells toggle (for Grid layout) */}
+          {method === "partial-products" && layout === "grid" && (
             <div>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={useColumnar}
-                  onChange={(e) => setUseColumnar(e.target.checked)}
+                  checked={showAllCells}
+                  onChange={(e) => setShowAllCells(e.target.checked)}
                   className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
                 />
-                <span className="text-sm font-semibold">
-                  Use columnar layout (traditional arithmetic format)
-                </span>
+                <span className="text-sm font-semibold">Show all cells (no placeholders)</span>
               </label>
               <p className="text-xs text-muted-foreground mt-1 ml-8">
-                Digit-by-digit inputs with carry boxes - easier to add up!
+                Turn this on to show input cells for leading zeros instead of blank spaces
               </p>
             </div>
           )}
@@ -187,7 +233,7 @@ export default function DemoPage() {
 
         {/* Current problem display */}
         <div className="bg-card border rounded-lg p-8">
-          {method === "partial-products" && !useColumnar && (
+          {method === "partial-products" && layout === "standard" && (
             <MultiplicationPartialProducts
               key={`pp-${multiplicand}-${multiplier}`}
               multiplicand={multiplicand}
@@ -196,12 +242,22 @@ export default function DemoPage() {
             />
           )}
 
-          {method === "partial-products" && useColumnar && (
+          {method === "partial-products" && layout === "columnar" && (
             <MultiplicationPartialProductsColumnar
               key={`ppc-${multiplicand}-${multiplier}`}
               multiplicand={multiplicand}
               multiplier={multiplier}
               showValidation={showValidation}
+            />
+          )}
+
+          {method === "partial-products" && layout === "grid" && (
+            <MultiplicationPartialProductsGrid
+              key={`ppg-${multiplicand}-${multiplier}`}
+              multiplicand={multiplicand}
+              multiplier={multiplier}
+              showValidation={showValidation}
+              showAllCells={showAllCells}
             />
           )}
 
