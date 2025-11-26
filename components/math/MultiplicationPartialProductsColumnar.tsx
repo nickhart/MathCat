@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { cn } from "@/lib/utils/cn"
 import { CatValidator } from "@/components/feedback/CatValidator"
+import { MATH_TYPOGRAPHY } from "@/lib/constants/typography"
 
 export interface MultiplicationPartialProductsColumnarProps {
   multiplicand: number
@@ -67,6 +68,10 @@ export function MultiplicationPartialProductsColumnar({
   const [isComplete, setIsComplete] = useState(false)
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
 
+  // Ref and state for character width measurement
+  const sumInputRef = useRef<HTMLInputElement>(null)
+  const [charWidth, setCharWidth] = useState<number | null>(null)
+
   // Check completion and correctness
   useEffect(() => {
     const allPartialsFilled = partialProducts.every((_, index) => {
@@ -95,6 +100,31 @@ export function MultiplicationPartialProductsColumnar({
       setIsCorrect(null)
     }
   }, [inputs, sumInput, partialProducts, expectedSum, onComplete])
+
+  // Measure actual character width for precise alignment
+  useEffect(() => {
+    if (!sumInputRef.current) return
+
+    const computedStyle = window.getComputedStyle(sumInputRef.current)
+
+    // Create temporary span to measure character width
+    const tempSpan = document.createElement("span")
+    tempSpan.textContent = "0".repeat(10) // Measure 10 chars for better precision
+    tempSpan.style.cssText = `
+      position: absolute;
+      visibility: hidden;
+      font-family: ${computedStyle.fontFamily};
+      font-size: ${computedStyle.fontSize};
+      font-weight: ${computedStyle.fontWeight};
+      letter-spacing: 0;
+    `
+    document.body.appendChild(tempSpan)
+
+    const avgWidth = tempSpan.getBoundingClientRect().width / 10
+    setCharWidth(avgWidth)
+
+    document.body.removeChild(tempSpan)
+  }, [])
 
   const handleInputChange = (index: number, value: string) => {
     // Only allow numbers
@@ -147,13 +177,24 @@ export function MultiplicationPartialProductsColumnar({
           <div className="flex items-center gap-3 mb-2">
             <div className="w-32 text-sm text-muted-foreground text-right">Partial Products:</div>
             <div
-              className="flex justify-start gap-1"
-              style={{ width: `calc(${maxDigits + 2}ch + 1.5rem)` }}
+              className="flex"
+              style={{
+                fontFamily: MATH_TYPOGRAPHY.fontFamily,
+                fontSize: MATH_TYPOGRAPHY.fontSize.main,
+                width: charWidth ? `${maxDigits * charWidth + 24}px` : `${maxDigits}ch`,
+                paddingLeft: MATH_TYPOGRAPHY.padding.main,
+                paddingRight: MATH_TYPOGRAPHY.padding.main,
+                gap: "0",
+              }}
             >
               {Array.from({ length: maxDigits }, (_, i) => {
                 const placeValue = Math.pow(10, maxDigits - 1 - i)
                 return (
-                  <div key={i} className="flex-1 text-center text-xs text-muted-foreground">
+                  <div
+                    key={i}
+                    className="text-center text-xs text-muted-foreground"
+                    style={{ width: charWidth ? `${charWidth}px` : "1ch" }}
+                  >
                     {formatPlaceValue(placeValue)}
                   </div>
                 )
@@ -178,12 +219,23 @@ export function MultiplicationPartialProductsColumnar({
                   value={userValue}
                   onChange={(e) => handleInputChange(index, e.target.value)}
                   className={cn(
-                    "px-3 py-2 text-lg font-mono text-right border-2 rounded-md",
+                    "py-2 border-2 rounded-md",
                     "focus:outline-none focus:ring-2 focus:ring-primary",
                     showValidation && isFilled && isCorrectValue && "border-green-500 bg-green-50",
                     showValidation && isFilled && !isCorrectValue && "border-red-500 bg-red-50"
                   )}
-                  style={{ width: `calc(${maxDigits + 2}ch + 1.5rem)` }}
+                  style={{
+                    fontFamily: MATH_TYPOGRAPHY.fontFamily,
+                    fontSize: MATH_TYPOGRAPHY.fontSize.main,
+                    width: charWidth
+                      ? `${maxDigits * charWidth + 24}px`
+                      : `calc(${maxDigits + 2}ch + 1.5rem)`,
+                    padding: MATH_TYPOGRAPHY.padding.main,
+                    paddingLeft: MATH_TYPOGRAPHY.padding.main,
+                    paddingRight: MATH_TYPOGRAPHY.padding.main,
+                    letterSpacing: "0",
+                    textAlign: "right",
+                  }}
                   placeholder="?"
                 />
               </div>
@@ -195,7 +247,11 @@ export function MultiplicationPartialProductsColumnar({
             <div className="w-32" />
             <div
               className="border-t-2 border-gray-800"
-              style={{ width: `calc(${maxDigits + 2}ch + 1.5rem)` }}
+              style={{
+                width: charWidth
+                  ? `${maxDigits * charWidth + 24}px`
+                  : `calc(${maxDigits + 2}ch + 1.5rem)`,
+              }}
             />
           </div>
 
@@ -203,32 +259,46 @@ export function MultiplicationPartialProductsColumnar({
           <div className="flex items-center gap-3 mb-2">
             <div className="text-xs text-muted-foreground w-32 text-right">Carry (optional):</div>
             <div
-              className="flex justify-start"
-              style={{ width: `calc(${maxDigits + 2}ch + 1.5rem)` }}
+              className="flex"
+              style={{
+                fontFamily: MATH_TYPOGRAPHY.fontFamily,
+                fontSize: MATH_TYPOGRAPHY.fontSize.main,
+                width: charWidth ? `${maxDigits * charWidth + 24}px` : `${maxDigits}ch`,
+                paddingLeft: MATH_TYPOGRAPHY.padding.main,
+                paddingRight: MATH_TYPOGRAPHY.padding.main,
+                gap: "0",
+              }}
             >
               {Array.from({ length: maxDigits }, (_, i) => {
                 const place = maxDigits - 1 - i
-                const colWidth = `calc((${maxDigits + 2}ch + 1.5rem) / ${maxDigits})`
 
                 // No carry for ones place (rightmost)
                 if (place === 0) {
-                  return <div key={place} style={{ width: colWidth }} />
+                  return (
+                    <div key={place} style={{ width: charWidth ? `${charWidth}px` : "18px" }} />
+                  )
                 }
 
                 const userValue = carryDigits[place] || ""
 
                 return (
-                  <div key={place} className="flex justify-center" style={{ width: colWidth }}>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={userValue}
-                      onChange={(e) => handleCarryChange(place, e.target.value)}
-                      className="w-3 h-7 text-center text-xs font-mono border border-dashed border-gray-400 rounded bg-blue-50/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      placeholder="0"
-                    />
-                  </div>
+                  <input
+                    key={place}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={userValue}
+                    onChange={(e) => handleCarryChange(place, e.target.value)}
+                    className="h-6 text-center border border-dashed border-gray-400 rounded bg-blue-50/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    style={{
+                      fontFamily: MATH_TYPOGRAPHY.fontFamily,
+                      fontSize: MATH_TYPOGRAPHY.fontSize.carry,
+                      width: charWidth ? `${charWidth}px` : "18px",
+                      padding: "2px",
+                      letterSpacing: "0",
+                    }}
+                    placeholder="0"
+                  />
                 )
               })}
             </div>
@@ -238,12 +308,13 @@ export function MultiplicationPartialProductsColumnar({
           <div className="flex items-center gap-3">
             <label className="text-lg font-mono w-32 text-right font-semibold">Sum =</label>
             <input
+              ref={sumInputRef}
               type="text"
               inputMode="numeric"
               value={sumInput}
               onChange={(e) => handleSumChange(e.target.value)}
               className={cn(
-                "px-3 py-2 text-lg font-mono text-right border-2 rounded-md font-semibold",
+                "py-2 border-2 rounded-md font-semibold",
                 "focus:outline-none focus:ring-2 focus:ring-primary",
                 showValidation &&
                   sumInput.trim() !== "" &&
@@ -254,7 +325,18 @@ export function MultiplicationPartialProductsColumnar({
                   parseInt(sumInput) !== expectedSum &&
                   "border-red-500 bg-red-50"
               )}
-              style={{ width: `calc(${maxDigits + 2}ch + 1.5rem)` }}
+              style={{
+                fontFamily: MATH_TYPOGRAPHY.fontFamily,
+                fontSize: MATH_TYPOGRAPHY.fontSize.main,
+                width: charWidth
+                  ? `${maxDigits * charWidth + 24}px`
+                  : `calc(${maxDigits + 2}ch + 1.5rem)`,
+                padding: MATH_TYPOGRAPHY.padding.main,
+                paddingLeft: MATH_TYPOGRAPHY.padding.main,
+                paddingRight: MATH_TYPOGRAPHY.padding.main,
+                letterSpacing: "0",
+                textAlign: "right",
+              }}
               placeholder="?"
             />
 
