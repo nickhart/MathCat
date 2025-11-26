@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { cn } from "@/lib/utils/cn"
-import { DigitGrid } from "@/components/math/DigitGrid"
+import { DigitGrid, DigitGridRef } from "@/components/math/DigitGrid"
 
 export interface MultiplicationPartialProductsGridProps {
   multiplicand: number
@@ -60,6 +60,9 @@ export function MultiplicationPartialProductsGrid({
   const partialProducts = calculatePartialProducts()
   const expectedSum = multiplicand * multiplier
 
+  // Ref for sum row to enable programmatic focus
+  const sumRowRef = useRef<DigitGridRef>(null)
+
   // State for user inputs
   const [inputs, setInputs] = useState<Record<number, string>>({})
   const [carryDigits, setCarryDigits] = useState("")
@@ -106,6 +109,14 @@ export function MultiplicationPartialProductsGrid({
 
   const handleInputChange = (index: number, value: string) => {
     setInputs((prev) => ({ ...prev, [index]: value }))
+  }
+
+  // Handle carry digit change - focus corresponding sum cell
+  const handleCarryDigitChange = (index: number, value: string) => {
+    // When a carry digit is entered, focus the corresponding cell in the sum row
+    if (value !== "" && sumRowRef.current) {
+      sumRowRef.current.focusCell(index)
+    }
   }
 
   // Helper to format large place values
@@ -213,6 +224,7 @@ export function MultiplicationPartialProductsGrid({
               spacerIndices={[maxDigits]}
               cellClassName="text-xs h-8 border-dashed bg-blue-50/30"
               ariaLabel="Carry digits for addition"
+              onCellChange={handleCarryDigitChange}
             />
           </div>
 
@@ -220,6 +232,7 @@ export function MultiplicationPartialProductsGrid({
           <div className="flex items-center gap-3">
             <label className="text-lg font-mono w-32 text-right font-semibold">Sum =</label>
             <DigitGrid
+              ref={sumRowRef}
               value={sumInput}
               onChange={setSumInput}
               numCells={maxDigits + 1}

@@ -1,8 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { MultiplicationPartialProducts } from "@/components/math/MultiplicationPartialProducts"
-import { MultiplicationPartialProductsColumnar } from "@/components/math/MultiplicationPartialProductsColumnar"
 import { MultiplicationPartialProductsGrid } from "@/components/math/MultiplicationPartialProductsGrid"
 import { MultiplicationAreaModel } from "@/components/math/MultiplicationAreaModel"
 
@@ -16,11 +14,9 @@ const PRESET_PROBLEMS = [
 ]
 
 type MethodType = "partial-products" | "area-model"
-type LayoutType = "standard" | "columnar" | "grid"
 
 export default function DemoPage() {
   const [method, setMethod] = useState<MethodType>("partial-products")
-  const [layout, setLayout] = useState<LayoutType>("standard")
   const [multiplicand, setMultiplicand] = useState(23)
   const [multiplier, setMultiplier] = useState(45)
   const [customMultiplicand, setCustomMultiplicand] = useState("23")
@@ -111,53 +107,8 @@ export default function DemoPage() {
             </p>
           </div>
 
-          {/* Layout selector (for Partial Products) */}
-          {method === "partial-products" && (
-            <div>
-              <label className="block text-sm font-semibold mb-2">Layout Style:</label>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setLayout("standard")}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                    layout === "standard"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted hover:bg-muted/80"
-                  }`}
-                >
-                  Standard
-                </button>
-                <button
-                  onClick={() => setLayout("columnar")}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                    layout === "columnar"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted hover:bg-muted/80"
-                  }`}
-                >
-                  Columnar
-                </button>
-                <button
-                  onClick={() => setLayout("grid")}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                    layout === "grid"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted hover:bg-muted/80"
-                  }`}
-                >
-                  Grid
-                </button>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                {layout === "standard" && "Single input field per partial product"}
-                {layout === "columnar" &&
-                  "Single input with alignment - uses character width measurement"}
-                {layout === "grid" && "Individual digit cells with keyboard navigation"}
-              </p>
-            </div>
-          )}
-
           {/* Show all cells toggle (for Grid layout) */}
-          {method === "partial-products" && layout === "grid" && (
+          {method === "partial-products" && (
             <div>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -233,25 +184,7 @@ export default function DemoPage() {
 
         {/* Current problem display */}
         <div className="bg-card border rounded-lg p-8">
-          {method === "partial-products" && layout === "standard" && (
-            <MultiplicationPartialProducts
-              key={`pp-${multiplicand}-${multiplier}`}
-              multiplicand={multiplicand}
-              multiplier={multiplier}
-              showValidation={showValidation}
-            />
-          )}
-
-          {method === "partial-products" && layout === "columnar" && (
-            <MultiplicationPartialProductsColumnar
-              key={`ppc-${multiplicand}-${multiplier}`}
-              multiplicand={multiplicand}
-              multiplier={multiplier}
-              showValidation={showValidation}
-            />
-          )}
-
-          {method === "partial-products" && layout === "grid" && (
+          {method === "partial-products" && (
             <MultiplicationPartialProductsGrid
               key={`ppg-${multiplicand}-${multiplier}`}
               multiplicand={multiplicand}

@@ -1,7 +1,19 @@
 "use client"
 
-import { useRef, useEffect, KeyboardEvent, ClipboardEvent } from "react"
+import {
+  useRef,
+  useEffect,
+  KeyboardEvent,
+  ClipboardEvent,
+  forwardRef,
+  useImperativeHandle,
+} from "react"
 import { cn } from "@/lib/utils/cn"
+
+export interface DigitGridRef {
+  /** Focus a specific cell by index */
+  focusCell: (index: number) => void
+}
 
 export interface DigitGridProps {
   /** Current value as string of digits (e.g., "1234") */
@@ -28,23 +40,38 @@ export interface DigitGridProps {
   cellClassName?: string
   /** ARIA label for the grid */
   ariaLabel?: string
+  /** Callback when a digit is entered at a specific cell index */
+  onCellChange?: (index: number, value: string) => void
 }
 
-export function DigitGrid({
-  value,
-  onChange,
-  numCells,
-  spacerIndices = [],
-  disabled = false,
-  autoFocus = false,
-  autoAdvanceDirection = "right",
-  validation = null,
-  showValidation = false,
-  className,
-  cellClassName,
-  ariaLabel,
-}: DigitGridProps) {
+export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function DigitGrid(
+  {
+    value,
+    onChange,
+    numCells,
+    spacerIndices = [],
+    disabled = false,
+    autoFocus = false,
+    autoAdvanceDirection = "right",
+    validation = null,
+    showValidation = false,
+    className,
+    cellClassName,
+    ariaLabel,
+    onCellChange,
+  },
+  ref
+) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+
+  // Expose focusCell method to parent via ref
+  useImperativeHandle(ref, () => ({
+    focusCell: (index: number) => {
+      if (index >= 0 && index < numCells && !spacerIndices.includes(index)) {
+        inputRefs.current[index]?.focus()
+      }
+    },
+  }))
 
   // Initialize refs array
   useEffect(() => {
@@ -105,6 +132,11 @@ export function DigitGrid({
       .join("")
       .replace(/\s+$/, "")
     onChange(newValueStr)
+
+    // Call onCellChange callback if provided
+    if (onCellChange) {
+      onCellChange(index, newValue)
+    }
 
     // Auto-advance to next/previous cell if digit was entered
     if (newValue !== "" && autoAdvanceDirection !== "none") {
@@ -237,4 +269,4 @@ export function DigitGrid({
       })}
     </div>
   )
-}
+})
