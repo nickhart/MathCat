@@ -242,12 +242,13 @@ export function MultiplicationPartialProductsGrid({
               ariaLabel="Sum of partial products"
             />
           </div>
-        </div>
-      </div>
 
-      {/* Cat validator */}
-      <div className="flex justify-center mt-8">
-        <CatValidator isComplete={isComplete} isCorrect={isCorrect} />
+          {/* Cat validator */}
+          <div className="flex items-center gap-3 mt-8">
+            <div className="w-32" />
+            <CatValidator isComplete={isComplete} isCorrect={isCorrect} />
+          </div>
+        </div>
       </div>
     </div>
   )
