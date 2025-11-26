@@ -80,20 +80,23 @@ export function MultiplicationPartialProductsGrid({
   useEffect(() => {
     const allPartialsFilled = partialProducts.every((_, index) => {
       const value = inputs[index]
-      // Complete means all cells filled (no spaces)
-      return value !== undefined && value !== "" && !value.includes(" ")
+      // Complete means all digits entered (value without spaces is non-empty)
+      const trimmed = value?.replace(/\s/g, "") || ""
+      return trimmed !== ""
     })
 
-    const sumFilled = sumInput !== "" && !sumInput.includes(" ")
+    const sumTrimmed = sumInput.replace(/\s/g, "")
+    const sumFilled = sumTrimmed !== ""
 
     setIsComplete(allPartialsFilled && sumFilled)
 
     if (allPartialsFilled && sumFilled) {
       const allPartialsCorrect = partialProducts.every((product, index) => {
-        return parseInt(inputs[index] || "0") === product.value
+        const trimmed = inputs[index]?.replace(/\s/g, "") || "0"
+        return parseInt(trimmed) === product.value
       })
 
-      const sumCorrect = parseInt(sumInput || "0") === expectedSum
+      const sumCorrect = parseInt(sumTrimmed) === expectedSum
 
       const correct = allPartialsCorrect && sumCorrect
       setIsCorrect(correct)
