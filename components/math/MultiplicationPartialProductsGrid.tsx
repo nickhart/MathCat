@@ -224,6 +224,7 @@ export function MultiplicationPartialProductsGrid({
               spacerIndices={[maxDigits]}
               cellClassName="text-xs border-dashed bg-blue-50/30"
               ariaLabel="Carry digits for addition"
+              autoAdvanceDirection="none"
               onCellChange={handleCarryDigitChange}
             />
           </div>
