@@ -255,9 +255,10 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={(e) => handlePaste(index, e)}
             disabled={disabled}
+            onFocus={(e) => e.target.select()}
             className={cn(
               "w-12 h-12 text-center text-lg font-mono border-2 rounded-md",
-              "focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary",
+              "focus:outline-none focus:border-primary",
               "transition-colors",
               validationClasses,
               cellClassName

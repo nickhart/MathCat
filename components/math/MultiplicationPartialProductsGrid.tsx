@@ -222,7 +222,7 @@ export function MultiplicationPartialProductsGrid({
               onChange={setCarryDigits}
               numCells={maxDigits + 1}
               spacerIndices={[maxDigits]}
-              cellClassName="text-xs h-8 border-dashed bg-blue-50/30"
+              cellClassName="text-xs border-dashed bg-blue-50/30"
               ariaLabel="Carry digits for addition"
               onCellChange={handleCarryDigitChange}
             />
