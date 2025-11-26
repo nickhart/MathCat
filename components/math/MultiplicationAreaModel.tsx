@@ -69,12 +69,17 @@ export function MultiplicationAreaModel({
 
   const gridCells = createGrid()
   const expectedSum = multiplicand * multiplier
+  const maxDigits = expectedSum.toString().length
+  const totalCells = maxDigits + 1
 
   // State for selected cell (to highlight corresponding addition row)
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null)
 
   // State for user inputs in the area model grid
   const [cellInputs, setCellInputs] = useState<Record<string, string>>({})
+
+  // State to track addition grid inputs separately (to preserve DigitGrid format during editing)
+  const [additionGridInputs, setAdditionGridInputs] = useState<Record<number, string>>({})
 
   // Convert grid cells to AdditionGridRow format with highlighting
   const additionRows: AdditionGridRow[] = gridCells.map((cell) => ({
@@ -88,6 +93,15 @@ export function MultiplicationAreaModel({
     if (value === "" || /^\d+$/.test(value)) {
       const key = `${row}-${col}`
       setCellInputs((prev) => ({ ...prev, [key]: value }))
+
+      // Also update the corresponding addition grid input with right-aligned format
+      const cellIndex = gridCells.findIndex((c) => c.row === row && c.col === col)
+      if (cellIndex !== -1) {
+        setAdditionGridInputs((prev) => ({
+          ...prev,
+          [cellIndex]: toRightAlignedString(value, totalCells),
+        }))
+      }
     }
   }
 
@@ -111,21 +125,28 @@ export function MultiplicationAreaModel({
     return value.replace(/\s/g, "")
   }
 
-  const maxDigits = expectedSum.toString().length
-  const totalCells = maxDigits + 1
-
-  // Convert area model cell inputs to addition grid row format
+  // Get row input values - use additionGridInputs if available, otherwise convert from cellInputs
   const rowInputValues: Record<number, string> = {}
   gridCells.forEach((cell, index) => {
-    const key = `${cell.row}-${cell.col}`
-    const rawValue = cellInputs[key] || ""
-    rowInputValues[index] = toRightAlignedString(rawValue, totalCells)
+    // If we have a value in additionGridInputs, use that (preserves DigitGrid format during editing)
+    if (additionGridInputs[index] !== undefined) {
+      rowInputValues[index] = additionGridInputs[index]
+    } else {
+      // Otherwise, convert from area model cell input
+      const key = `${cell.row}-${cell.col}`
+      const rawValue = cellInputs[key] || ""
+      rowInputValues[index] = toRightAlignedString(rawValue, totalCells)
+    }
   })
 
-  // Handle changes from addition grid back to area model
+  // Handle changes from addition grid
   const handleAdditionRowChange = (rowIndex: number, value: string) => {
     const cell = gridCells[rowIndex]
     if (cell) {
+      // Store the DigitGrid format directly (preserves spaces during editing)
+      setAdditionGridInputs((prev) => ({ ...prev, [rowIndex]: value }))
+
+      // Also sync the numeric value back to the area model cell
       const key = `${cell.row}-${cell.col}`
       const numericValue = fromRightAlignedString(value)
       setCellInputs((prev) => ({ ...prev, [key]: numericValue }))
