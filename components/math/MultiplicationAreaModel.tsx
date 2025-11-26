@@ -95,6 +95,22 @@ export function MultiplicationAreaModel({
     setSelectedCell({ row, col })
   }
 
+  // Convert area model cell inputs to addition grid row format
+  const rowInputValues: Record<number, string> = {}
+  gridCells.forEach((cell, index) => {
+    const key = `${cell.row}-${cell.col}`
+    rowInputValues[index] = cellInputs[key] || ""
+  })
+
+  // Handle changes from addition grid back to area model
+  const handleAdditionRowChange = (rowIndex: number, value: string) => {
+    const cell = gridCells[rowIndex]
+    if (cell) {
+      const key = `${cell.row}-${cell.col}`
+      setCellInputs((prev) => ({ ...prev, [key]: value }))
+    }
+  }
+
   const getCellInput = (row: number, col: number): string => {
     const key = `${row}-${col}`
     return cellInputs[key] || ""
@@ -103,19 +119,20 @@ export function MultiplicationAreaModel({
   return (
     <div className={cn("flex flex-col gap-8", className)}>
       {/* Problem */}
-      <div>
-        <div className="mb-6">
-          <h3 className="text-2xl font-bold mb-2">Area Model Method</h3>
-          <p className="text-4xl font-mono">
-            {multiplicand} × {multiplier}
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">
-            Fill in each rectangle&apos;s area, then add them up using the digit grid below
-          </p>
-        </div>
+      <div className="mb-6">
+        <h3 className="text-2xl font-bold mb-2">Area Model Method</h3>
+        <p className="text-4xl font-mono">
+          {multiplicand} × {multiplier}
+        </p>
+        <p className="text-sm text-muted-foreground mt-2">
+          Fill in each rectangle&apos;s area, then add them up using the digit grid
+        </p>
+      </div>
 
+      {/* Responsive layout: stacked on small screens, side-by-side on large */}
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
         {/* Area model grid */}
-        <div className="inline-block">
+        <div className="flex-shrink-0">
           <div className="flex">
             {/* Top-left corner cell (empty) */}
             <div className="w-20 h-20 border-2 border-transparent" />
@@ -169,6 +186,7 @@ export function MultiplicationAreaModel({
                       inputMode="numeric"
                       value={userValue}
                       onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
+                      onFocus={() => handleCellClick(rowIndex, colIndex)}
                       onClick={(e) => e.stopPropagation()}
                       className={cn(
                         "w-full px-2 py-1 text-center font-mono text-lg border-2 rounded",
@@ -189,13 +207,15 @@ export function MultiplicationAreaModel({
         </div>
 
         {/* Addition grid for summing up the products */}
-        <div className="mt-12">
+        <div className="flex-1 min-w-0">
           <h4 className="text-lg font-semibold mb-4">Add up all the areas:</h4>
           <AdditionGrid
             rows={additionRows}
             expectedSum={expectedSum}
             onComplete={onComplete}
             showValidation={showValidation}
+            rowInputValues={rowInputValues}
+            onRowInputChange={handleAdditionRowChange}
           />
         </div>
       </div>

@@ -27,6 +27,10 @@ export interface AdditionGridProps {
   showAllCells?: boolean
   /** Additional classes for container */
   className?: string
+  /** Optional: External control of row input values (for syncing with other UI) */
+  rowInputValues?: Record<number, string>
+  /** Optional: Callback when a row input changes */
+  onRowInputChange?: (rowIndex: number, value: string) => void
 }
 
 export function AdditionGrid({
@@ -36,6 +40,8 @@ export function AdditionGrid({
   showValidation = true,
   showAllCells = false,
   className,
+  rowInputValues,
+  onRowInputChange,
 }: AdditionGridProps) {
   // Ref for sum row to enable programmatic focus
   const sumRowRef = useRef<DigitGridRef>(null)
@@ -55,7 +61,7 @@ export function AdditionGrid({
   // Check completion and correctness
   useEffect(() => {
     const allRowsFilled = rows.every((_, index) => {
-      const value = inputs[index]
+      const value = rowInputValues !== undefined ? rowInputValues[index] : inputs[index]
       // Complete means all digits entered (value without spaces is non-empty)
       const trimmed = value?.replace(/\s/g, "") || ""
       return trimmed !== ""
@@ -68,7 +74,8 @@ export function AdditionGrid({
 
     if (allRowsFilled && sumFilled) {
       const allRowsCorrect = rows.every((row, index) => {
-        const trimmed = inputs[index]?.replace(/\s/g, "") || "0"
+        const value = rowInputValues !== undefined ? rowInputValues[index] : inputs[index]
+        const trimmed = value?.replace(/\s/g, "") || "0"
         return parseInt(trimmed) === row.value
       })
 
@@ -83,10 +90,22 @@ export function AdditionGrid({
     } else {
       setIsCorrect(null)
     }
-  }, [inputs, sumInput, rows, expectedSum, onComplete])
+  }, [inputs, sumInput, rows, expectedSum, onComplete, rowInputValues])
 
   const handleInputChange = (index: number, value: string) => {
-    setInputs((prev) => ({ ...prev, [index]: value }))
+    if (onRowInputChange) {
+      onRowInputChange(index, value)
+    } else {
+      setInputs((prev) => ({ ...prev, [index]: value }))
+    }
+  }
+
+  // Use external values if provided, otherwise use internal state
+  const getRowInput = (index: number): string => {
+    if (rowInputValues !== undefined) {
+      return rowInputValues[index] || ""
+    }
+    return inputs[index] || ""
   }
 
   // Handle carry digit change - focus corresponding sum cell
@@ -108,7 +127,7 @@ export function AdditionGrid({
   // Determine validation state for each row
   const getRowValidation = (index: number): "correct" | "incorrect" | null => {
     if (!showValidation) return null
-    const value = inputs[index]
+    const value = getRowInput(index)
     const trimmed = value?.replace(/\s/g, "") || ""
     if (trimmed === "") return null
     return parseInt(trimmed) === rows[index].value ? "correct" : "incorrect"
@@ -157,7 +176,7 @@ export function AdditionGrid({
                 {row.label} =
               </label>
               <DigitGrid
-                value={inputs[index] || ""}
+                value={getRowInput(index)}
                 onChange={(value) => handleInputChange(index, value)}
                 numCells={maxDigits + 1}
                 spacerIndices={spacerIndices}
