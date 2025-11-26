@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { cn } from "@/lib/utils/cn"
 import { DigitGrid, DigitGridRef } from "@/components/math/DigitGrid"
+import { CatValidator } from "@/components/feedback/CatValidator"
 
 export interface MultiplicationPartialProductsGridProps {
   multiplicand: number
@@ -69,9 +70,7 @@ export function MultiplicationPartialProductsGrid({
   const [sumInput, setSumInput] = useState("")
 
   // Validation state
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isComplete, setIsComplete] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
 
   // Determine max digits needed
@@ -244,6 +243,11 @@ export function MultiplicationPartialProductsGrid({
             />
           </div>
         </div>
+      </div>
+
+      {/* Cat validator */}
+      <div className="flex justify-center mt-8">
+        <CatValidator isComplete={isComplete} isCorrect={isCorrect} />
       </div>
     </div>
   )
