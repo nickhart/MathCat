@@ -95,11 +95,31 @@ export function MultiplicationAreaModel({
     setSelectedCell({ row, col })
   }
 
+  // Helper to convert a number string to right-aligned format for DigitGrid
+  const toRightAlignedString = (value: string, totalCells: number): string => {
+    if (!value || value.trim() === "") return ""
+    // Remove any existing spaces
+    const digits = value.replace(/\s/g, "")
+    // Pad with leading spaces for right alignment
+    return digits.padStart(totalCells, " ")
+  }
+
+  // Helper to extract just the number from a right-aligned DigitGrid string
+  const fromRightAlignedString = (value: string): string => {
+    if (!value) return ""
+    // Remove all spaces
+    return value.replace(/\s/g, "")
+  }
+
+  const maxDigits = expectedSum.toString().length
+  const totalCells = maxDigits + 1
+
   // Convert area model cell inputs to addition grid row format
   const rowInputValues: Record<number, string> = {}
   gridCells.forEach((cell, index) => {
     const key = `${cell.row}-${cell.col}`
-    rowInputValues[index] = cellInputs[key] || ""
+    const rawValue = cellInputs[key] || ""
+    rowInputValues[index] = toRightAlignedString(rawValue, totalCells)
   })
 
   // Handle changes from addition grid back to area model
@@ -107,7 +127,8 @@ export function MultiplicationAreaModel({
     const cell = gridCells[rowIndex]
     if (cell) {
       const key = `${cell.row}-${cell.col}`
-      setCellInputs((prev) => ({ ...prev, [key]: value }))
+      const numericValue = fromRightAlignedString(value)
+      setCellInputs((prev) => ({ ...prev, [key]: numericValue }))
     }
   }
 
