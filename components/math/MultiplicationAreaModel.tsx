@@ -70,21 +70,29 @@ export function MultiplicationAreaModel({
   const gridCells = createGrid()
   const expectedSum = multiplicand * multiplier
 
-  // Convert grid cells to AdditionGridRow format
-  const additionRows: AdditionGridRow[] = gridCells.map((cell) => ({
-    value: cell.expected,
-    label: `${cell.rowValue} × ${cell.colValue}`,
-    highlighted: false, // Will implement selection later
-  }))
+  // State for selected cell (to highlight corresponding addition row)
+  const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null)
 
   // State for user inputs in the area model grid
   const [cellInputs, setCellInputs] = useState<Record<string, string>>({})
+
+  // Convert grid cells to AdditionGridRow format with highlighting
+  const additionRows: AdditionGridRow[] = gridCells.map((cell) => ({
+    value: cell.expected,
+    label: `${cell.rowValue} × ${cell.colValue}`,
+    highlighted:
+      selectedCell !== null && selectedCell.row === cell.row && selectedCell.col === cell.col,
+  }))
 
   const handleCellChange = (row: number, col: number, value: string) => {
     if (value === "" || /^\d+$/.test(value)) {
       const key = `${row}-${col}`
       setCellInputs((prev) => ({ ...prev, [key]: value }))
     }
+  }
+
+  const handleCellClick = (row: number, col: number) => {
+    setSelectedCell({ row, col })
   }
 
   const getCellInput = (row: number, col: number): string => {
@@ -137,11 +145,21 @@ export function MultiplicationAreaModel({
                 const userValue = getCellInput(rowIndex, colIndex)
                 const isFilled = userValue.trim() !== ""
                 const isCorrectValue = isFilled && parseInt(userValue) === cell.expected
+                const isSelected =
+                  selectedCell !== null &&
+                  selectedCell.row === rowIndex &&
+                  selectedCell.col === colIndex
 
                 return (
                   <div
                     key={`cell-${rowIndex}-${colIndex}`}
-                    className="w-32 h-32 border-2 border-gray-300 p-2 flex flex-col items-center justify-center gap-2"
+                    onClick={() => handleCellClick(rowIndex, colIndex)}
+                    className={cn(
+                      "w-32 h-32 border-2 p-2 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors",
+                      isSelected
+                        ? "border-primary bg-primary/10 ring-2 ring-primary ring-offset-2"
+                        : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                    )}
                   >
                     <div className="text-xs text-muted-foreground">
                       {rowValue} × {colValue}
@@ -151,6 +169,7 @@ export function MultiplicationAreaModel({
                       inputMode="numeric"
                       value={userValue}
                       onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
                       className={cn(
                         "w-full px-2 py-1 text-center font-mono text-lg border-2 rounded",
                         "focus:outline-none focus:ring-2 focus:ring-primary",
