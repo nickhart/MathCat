@@ -49,6 +49,15 @@ export function AdditionGrid({
   // Ref for sum row to enable programmatic focus
   const sumRowRef = useRef<DigitGridRef>(null)
 
+  // Ref to track last completion state to avoid duplicate calls
+  const lastCompletionState = useRef<boolean | null>(null)
+
+  // Ref to store latest onComplete callback
+  const onCompleteRef = useRef(onComplete)
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  }, [onComplete])
+
   // State for user inputs
   const [inputs, setInputs] = useState<Record<number, string>>({})
   const [carryDigits, setCarryDigits] = useState("")
@@ -73,9 +82,9 @@ export function AdditionGrid({
     const sumTrimmed = sumInput.replace(/\s/g, "")
     const sumFilled = sumTrimmed !== ""
 
-    setIsComplete(allRowsFilled && sumFilled)
+    const nowComplete = allRowsFilled && sumFilled
 
-    if (allRowsFilled && sumFilled) {
+    if (nowComplete) {
       const allRowsCorrect = rows.every((row, index) => {
         const value = rowInputValues !== undefined ? rowInputValues[index] : inputs[index]
         const trimmed = value?.replace(/\s/g, "") || "0"
@@ -85,15 +94,21 @@ export function AdditionGrid({
       const sumCorrect = parseInt(sumTrimmed) === expectedSum
 
       const correct = allRowsCorrect && sumCorrect
+
+      setIsComplete(true)
       setIsCorrect(correct)
 
-      if (onComplete) {
-        onComplete(correct)
+      // Call onComplete when correctness state changes
+      if (onCompleteRef.current && lastCompletionState.current !== correct) {
+        lastCompletionState.current = correct
+        onCompleteRef.current(correct)
       }
     } else {
+      setIsComplete(false)
       setIsCorrect(null)
+      lastCompletionState.current = null
     }
-  }, [inputs, sumInput, rows, expectedSum, onComplete, rowInputValues])
+  }, [inputs, sumInput, rows, expectedSum, rowInputValues])
 
   const handleInputChange = (index: number, value: string) => {
     if (onRowInputChange) {

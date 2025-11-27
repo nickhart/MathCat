@@ -23,9 +23,13 @@ export default function ProblemPage() {
   const [problem, setProblem] = useState<Problem | null>(null)
   const [showCelebration, setShowCelebration] = useState(false)
   const [completedSectionTitle, setCompletedSectionTitle] = useState("")
+  const [justCompleted, setJustCompleted] = useState(false)
   const worksheet = sampleWorksheet as Worksheet
 
   useEffect(() => {
+    // Reset completion state when problem changes
+    setJustCompleted(false)
+
     // Find the problem
     const foundProblem = worksheet.problems.find((p) => p.id === problemId)
     if (!foundProblem) {
@@ -72,6 +76,11 @@ export default function ProblemPage() {
     saveWorksheetProgress(updatedProgress)
     setProgress(updatedProgress)
 
+    // Mark as just completed if correct
+    if (isCorrect) {
+      setJustCompleted(true)
+    }
+
     // Check if section is now complete
     if (isCorrect && section && sectionProblemIds) {
       const sectionJustCompleted = isSectionComplete(updatedProgress, sectionProblemIds)
@@ -107,7 +116,8 @@ export default function ProblemPage() {
 
   // Check if problem is complete and correct
   const problemState = progress.problemStates[problemId]
-  const isProblemComplete = problemState?.isComplete && problemState?.isCorrect === true
+  const isProblemComplete =
+    justCompleted || (problemState?.isComplete && problemState?.isCorrect === true)
 
   return (
     <>
