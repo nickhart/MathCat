@@ -1,0 +1,146 @@
+{
+  "id": "multiplication-practice-1",
+  "title": "Multiplication Practice",
+  "description": "Practice multiplication using different methods",
+  "createdAt": "2025-01-15T00:00:00.000Z",
+  "settings": {
+    "showMethodSelector": true,
+    "allowedMethods": ["partial-products", "area-model", "classic-algorithm"],
+    "showHints": false,
+    "requireSequentialCompletion": false
+  },
+  "sections": [
+    {
+      "id": "section-1",
+      "title": "Two-digit by One-digit",
+      "problems": [
+        {
+          "id": "prob-1-1",
+          "operation": "multiplication",
+          "operands": [23, 4],
+          "difficulty": "easy",
+          "correctAnswer": 92
+        },
+        {
+          "id": "prob-1-2",
+          "operation": "multiplication",
+          "operands": [37, 5],
+          "difficulty": "easy",
+          "correctAnswer": 185
+        },
+        {
+          "id": "prob-1-3",
+          "operation": "multiplication",
+          "operands": [48, 6],
+          "difficulty": "easy",
+          "correctAnswer": 288
+        }
+      ]
+    },
+    {
+      "id": "section-2",
+      "title": "Two-digit by Two-digit",
+      "problems": [
+        {
+          "id": "prob-2-1",
+          "operation": "multiplication",
+          "operands": [23, 14],
+          "difficulty": "medium",
+          "correctAnswer": 322
+        },
+        {
+          "id": "prob-2-2",
+          "operation": "multiplication",
+          "operands": [37, 25],
+          "difficulty": "medium",
+          "correctAnswer": 925
+        },
+        {
+          "id": "prob-2-3",
+          "operation": "multiplication",
+          "operands": [48, 36],
+          "difficulty": "medium",
+          "correctAnswer": 1728
+        }
+      ]
+    },
+    {
+      "id": "section-3",
+      "title": "Challenge Problems",
+      "problems": [
+        {
+          "id": "prob-3-1",
+          "operation": "multiplication",
+          "operands": [123, 45],
+          "difficulty": "hard",
+          "correctAnswer": 5535
+        },
+        {
+          "id": "prob-3-2",
+          "operation": "multiplication",
+          "operands": [234, 67],
+          "difficulty": "hard",
+          "correctAnswer": 15678
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "id": "prob-1-1",
+      "operation": "multiplication",
+      "operands": [23, 4],
+      "difficulty": "easy",
+      "correctAnswer": 92
+    },
+    {
+      "id": "prob-1-2",
+      "operation": "multiplication",
+      "operands": [37, 5],
+      "difficulty": "easy",
+      "correctAnswer": 185
+    },
+    {
+      "id": "prob-1-3",
+      "operation": "multiplication",
+      "operands": [48, 6],
+      "difficulty": "easy",
+      "correctAnswer": 288
+    },
+    {
+      "id": "prob-2-1",
+      "operation": "multiplication",
+      "operands": [23, 14],
+      "difficulty": "medium",
+      "correctAnswer": 322
+    },
+    {
+      "id": "prob-2-2",
+      "operation": "multiplication",
+      "operands": [37, 25],
+      "difficulty": "medium",
+      "correctAnswer": 925
+    },
+    {
+      "id": "prob-2-3",
+      "operation": "multiplication",
+      "operands": [48, 36],
+      "difficulty": "medium",
+      "correctAnswer": 1728
+    },
+    {
+      "id": "prob-3-1",
+      "operation": "multiplication",
+      "operands": [123, 45],
+      "difficulty": "hard",
+      "correctAnswer": 5535
+    },
+    {
+      "id": "prob-3-2",
+      "operation": "multiplication",
+      "operands": [234, 67],
+      "difficulty": "hard",
+      "correctAnswer": 15678
+    }
+  ]
+}
