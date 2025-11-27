@@ -30,6 +30,8 @@ export interface DigitGridProps {
   autoFocus?: boolean
   /** Direction to auto-advance focus after entering a digit */
   autoAdvanceDirection?: "left" | "right" | "none"
+  /** Which cell to focus when grid receives focus via tab */
+  focusOnTab?: "first" | "last"
   /** Validation state for the entire row */
   validation?: "correct" | "incorrect" | null
   /** Show validation styling (green/red borders) */
@@ -55,6 +57,7 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
     disabled = false,
     autoFocus = false,
     autoAdvanceDirection = "right",
+    focusOnTab = "first",
     validation = null,
     showValidation = false,
     className,
@@ -229,11 +232,25 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
 
   const validationClasses = getValidationClasses()
 
+  // Handle container focus to focus the appropriate cell
+  const handleContainerFocus = (e: React.FocusEvent<HTMLDivElement>) => {
+    // Only handle if the container itself received focus (not bubbling from child)
+    if (e.target === e.currentTarget) {
+      const targetIndex =
+        focusOnTab === "last" ? getNextInputIndex(numCells, -1) : getNextInputIndex(-1, 1)
+      if (targetIndex !== -1) {
+        inputRefs.current[targetIndex]?.focus()
+      }
+    }
+  }
+
   return (
     <div
       className={cn("flex gap-0", className)}
       role="group"
       aria-label={ariaLabel || "Digit input grid"}
+      tabIndex={0}
+      onFocus={handleContainerFocus}
     >
       {Array.from({ length: numCells }, (_, index) => {
         const isSpacer = spacerIndices.includes(index)
@@ -258,6 +275,7 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={(e) => handlePaste(index, e)}
             disabled={disabled}
+            tabIndex={-1}
             onFocus={(e) => {
               e.target.select()
               if (onGridFocus) {

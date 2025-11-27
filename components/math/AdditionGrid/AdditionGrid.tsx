@@ -241,6 +241,7 @@ export function AdditionGrid({
             onChange={setSumInput}
             numCells={maxDigits + 1}
             autoAdvanceDirection="left"
+            focusOnTab="last"
             validation={getSumValidation()}
             showValidation={showValidation}
             ariaLabel="Sum of all rows"
