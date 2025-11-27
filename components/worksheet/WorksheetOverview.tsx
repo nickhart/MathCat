@@ -1,10 +1,12 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { Worksheet, WorksheetProgress, WorksheetSection } from "@/types/worksheet"
 import { Problem } from "@/types/math"
 import { cn } from "@/lib/utils/cn"
-import { CheckCircle2, Circle } from "lucide-react"
+import { CheckCircle2, Circle, Share2, Check } from "lucide-react"
+import { copyShareableURL } from "@/lib/worksheet-uri"
 
 export interface WorksheetOverviewProps {
   worksheet: Worksheet
@@ -12,6 +14,19 @@ export interface WorksheetOverviewProps {
 }
 
 export function WorksheetOverview({ worksheet, progress }: WorksheetOverviewProps) {
+  const [shareStatus, setShareStatus] = useState<"idle" | "copying" | "copied">("idle")
+
+  const handleShare = async () => {
+    setShareStatus("copying")
+    const success = await copyShareableURL(worksheet)
+    if (success) {
+      setShareStatus("copied")
+      setTimeout(() => setShareStatus("idle"), 2000)
+    } else {
+      setShareStatus("idle")
+    }
+  }
+
   const getSectionProgress = (section: WorksheetSection) => {
     const completed = section.problems.filter((problem) => {
       const state = progress.problemStates[problem.id]
@@ -49,10 +64,36 @@ export function WorksheetOverview({ worksheet, progress }: WorksheetOverviewProp
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-4xl font-bold">{worksheet.title}</h1>
-        {worksheet.description && (
-          <p className="text-lg text-muted-foreground">{worksheet.description}</p>
-        )}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <h1 className="text-4xl font-bold">{worksheet.title}</h1>
+            {worksheet.description && (
+              <p className="text-lg text-muted-foreground">{worksheet.description}</p>
+            )}
+          </div>
+          <button
+            onClick={handleShare}
+            disabled={shareStatus === "copying"}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors",
+              shareStatus === "copied"
+                ? "bg-green-600 text-white"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            )}
+          >
+            {shareStatus === "copied" ? (
+              <>
+                <Check className="w-4 h-4" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Share2 className="w-4 h-4" />
+                Share
+              </>
+            )}
+          </button>
+        </div>
         <div className="flex items-center gap-4 text-sm">
           <div className="font-semibold">
             Progress: {overall.completed} / {overall.total} ({overall.percentage}%)
