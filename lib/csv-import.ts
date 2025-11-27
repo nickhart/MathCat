@@ -73,7 +73,7 @@ export function parseCSVToWorksheet(
     let problemCounter = 0
 
     for (const [sectionName, sectionRows] of sectionMap.entries()) {
-      const problems: Problem[] = sectionRows.map((row, index) => {
+      const problems: Problem[] = sectionRows.map((row) => {
         problemCounter++
         return {
           id: `problem-${worksheetId}-${problemCounter}`,
