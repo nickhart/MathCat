@@ -46,6 +46,8 @@ export interface DigitGridProps {
   onCellChange?: (index: number, value: string) => void
   /** Callback when any cell in the grid receives focus */
   onGridFocus?: () => void
+  /** Callback when Enter is pressed on the last non-spacer cell */
+  onEnterAtEnd?: () => void
 }
 
 export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function DigitGrid(
@@ -65,6 +67,7 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
     ariaLabel,
     onCellChange,
     onGridFocus,
+    onEnterAtEnd,
   },
   ref
 ) {
@@ -181,6 +184,19 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
       e.preventDefault()
       const nextIndex = getNextInputIndex(index, 1)
       if (nextIndex !== -1) {
+        inputRefs.current[nextIndex]?.focus()
+      }
+    }
+
+    // Enter - move to next row if at last cell
+    if (e.key === "Enter") {
+      e.preventDefault()
+      const nextIndex = getNextInputIndex(index, 1)
+      if (nextIndex === -1 && onEnterAtEnd) {
+        // We're at the last cell, call the callback
+        onEnterAtEnd()
+      } else if (nextIndex !== -1) {
+        // Move to next cell in same row
         inputRefs.current[nextIndex]?.focus()
       }
     }

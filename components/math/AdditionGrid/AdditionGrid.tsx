@@ -46,8 +46,15 @@ export function AdditionGrid({
   onRowInputChange,
   onRowFocus,
 }: AdditionGridProps) {
-  // Ref for sum row to enable programmatic focus
+  // Refs for all rows to enable programmatic focus
+  const rowRefs = useRef<(DigitGridRef | null)[]>([])
+  const carryRowRef = useRef<DigitGridRef>(null)
   const sumRowRef = useRef<DigitGridRef>(null)
+
+  // Initialize refs array
+  useEffect(() => {
+    rowRefs.current = rowRefs.current.slice(0, rows.length)
+  }, [rows.length])
 
   // Ref to track last completion state to avoid duplicate calls
   const lastCompletionState = useRef<boolean | null>(null)
@@ -134,6 +141,26 @@ export function AdditionGrid({
     }
   }
 
+  // Handle Enter at end of row - focus first cell of next row
+  const handleRowEnterAtEnd = (rowIndex: number) => {
+    const nextRowIndex = rowIndex + 1
+    if (nextRowIndex < rows.length) {
+      // Focus next number row
+      rowRefs.current[nextRowIndex]?.focusCell(0)
+    } else {
+      // Last number row, focus carry row
+      carryRowRef.current?.focusCell(0)
+    }
+  }
+
+  const handleCarryRowEnterAtEnd = () => {
+    // Focus last cell of sum row (rightmost)
+    if (sumRowRef.current) {
+      const lastCellIndex = maxDigits // Last non-spacer cell
+      sumRowRef.current.focusCell(lastCellIndex)
+    }
+  }
+
   // Helper to format large place values
   const formatPlaceValue = (value: number): string => {
     if (value >= 1_000_000_000) return `${value / 1_000_000_000}b`
@@ -194,6 +221,9 @@ export function AdditionGrid({
                 {row.label} =
               </label>
               <DigitGrid
+                ref={(el) => {
+                  rowRefs.current[index] = el
+                }}
                 value={getRowInput(index)}
                 onChange={(value) => handleInputChange(index, value)}
                 numCells={maxDigits + 1}
@@ -203,6 +233,7 @@ export function AdditionGrid({
                 ariaLabel={`Row ${index + 1}: ${row.label}`}
                 className={cn(row.highlighted && "ring-2 ring-primary ring-offset-2 rounded-md")}
                 onGridFocus={() => onRowFocus?.(index)}
+                onEnterAtEnd={() => handleRowEnterAtEnd(index)}
               />
             </div>
           )
@@ -221,6 +252,7 @@ export function AdditionGrid({
         <div className="flex items-center gap-3 mb-2">
           <label className="text-xs text-muted-foreground w-32 text-right">Carry (optional):</label>
           <DigitGrid
+            ref={carryRowRef}
             value={carryDigits}
             onChange={setCarryDigits}
             numCells={maxDigits + 1}
@@ -229,23 +261,34 @@ export function AdditionGrid({
             ariaLabel="Carry digits for addition"
             autoAdvanceDirection="none"
             onCellChange={handleCarryDigitChange}
+            onEnterAtEnd={handleCarryRowEnterAtEnd}
           />
         </div>
 
         {/* Sum row */}
         <div className="flex items-center gap-3">
           <label className="text-lg font-mono w-32 text-right font-semibold">Sum =</label>
-          <DigitGrid
-            ref={sumRowRef}
-            value={sumInput}
-            onChange={setSumInput}
-            numCells={maxDigits + 1}
-            autoAdvanceDirection="left"
-            focusOnTab="last"
-            validation={getSumValidation()}
-            showValidation={showValidation}
-            ariaLabel="Sum of all rows"
-          />
+          <div className="flex flex-col">
+            <DigitGrid
+              ref={sumRowRef}
+              value={sumInput}
+              onChange={setSumInput}
+              numCells={maxDigits + 1}
+              autoAdvanceDirection="left"
+              focusOnTab="last"
+              validation={getSumValidation()}
+              showValidation={showValidation}
+              ariaLabel="Sum of all rows"
+            />
+            {/* Direction indicator */}
+            <div className="flex gap-0 mt-1">
+              {Array.from({ length: maxDigits + 1 }, (_, i) => (
+                <div key={i} className="w-12 text-center text-xs text-blue-600" aria-hidden="true">
+                  {i === 0 ? "" : "←"}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Cat validator */}
