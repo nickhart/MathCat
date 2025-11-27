@@ -6,7 +6,7 @@ import { Problem } from "@/types/math"
 import { SolvingMethod } from "@/types/math"
 import { WorksheetSettings } from "@/types/worksheet"
 import { cn } from "@/lib/utils/cn"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import { PartialProductsView, AreaModelView } from "./methods"
 
 export interface ProblemViewProps {
@@ -14,6 +14,8 @@ export interface ProblemViewProps {
   worksheetId: string
   settings: WorksheetSettings
   initialMethod?: SolvingMethod
+  nextProblemId?: string | null
+  isProblemComplete?: boolean
   onComplete?: (isCorrect: boolean, method: SolvingMethod) => void
 }
 
@@ -22,6 +24,8 @@ export function ProblemView({
   worksheetId: _worksheetId,
   settings,
   initialMethod,
+  nextProblemId,
+  isProblemComplete,
   onComplete,
 }: ProblemViewProps) {
   const [selectedMethod, setSelectedMethod] = useState<SolvingMethod>(
@@ -98,6 +102,37 @@ export function ProblemView({
           method={selectedMethod}
           onComplete={handleProblemComplete}
         />
+
+        {/* Navigation Controls */}
+        <div className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between">
+          <Link
+            href="/worksheet"
+            className="flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Worksheet
+          </Link>
+
+          {isProblemComplete && nextProblemId ? (
+            <Link
+              href={`/worksheet/problem/${nextProblemId}`}
+              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Next Problem
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          ) : isProblemComplete && !nextProblemId ? (
+            <Link
+              href="/worksheet"
+              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
+            >
+              All Done! Back to Worksheet
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          ) : (
+            <div className="text-sm text-muted-foreground">Complete the problem to continue</div>
+          )}
+        </div>
       </div>
     </div>
   )

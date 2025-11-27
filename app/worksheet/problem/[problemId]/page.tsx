@@ -81,24 +81,6 @@ export default function ProblemPage() {
         setShowCelebration(true)
       }
     }
-
-    // If correct and user wants sequential completion, navigate to next problem
-    if (isCorrect && worksheet.settings.requireSequentialCompletion) {
-      const currentIndex = worksheet.problems.findIndex((p) => p.id === problemId)
-      const nextProblem = worksheet.problems[currentIndex + 1]
-      if (nextProblem) {
-        // Small delay to show success state (longer if showing celebration)
-        const delay = showCelebration ? 3500 : 1500
-        setTimeout(() => {
-          router.push(`/worksheet/problem/${nextProblem.id}`)
-        }, delay)
-      } else {
-        // Last problem - go back to overview
-        setTimeout(() => {
-          router.push("/worksheet")
-        }, 1500)
-      }
-    }
   }
 
   if (!problem || !progress) {
@@ -111,6 +93,22 @@ export default function ProblemPage() {
 
   const initialMethod = progress.problemStates[problemId]?.currentMethod
 
+  // Find current section and next problem
+  const section = worksheet.sections?.find((s) => s.problems.some((p) => p.id === problemId))
+  let nextProblemId: string | null = null
+
+  if (section) {
+    const sectionProblems = section.problems
+    const currentIndex = sectionProblems.findIndex((p) => p.id === problemId)
+    if (currentIndex !== -1 && currentIndex < sectionProblems.length - 1) {
+      nextProblemId = sectionProblems[currentIndex + 1].id
+    }
+  }
+
+  // Check if problem is complete and correct
+  const problemState = progress.problemStates[problemId]
+  const isProblemComplete = problemState?.isComplete && problemState?.isCorrect === true
+
   return (
     <>
       <ProblemView
@@ -118,6 +116,8 @@ export default function ProblemPage() {
         worksheetId={worksheet.id}
         settings={worksheet.settings}
         initialMethod={initialMethod}
+        nextProblemId={nextProblemId}
+        isProblemComplete={isProblemComplete}
         onComplete={handleComplete}
       />
       <SectionComplete
