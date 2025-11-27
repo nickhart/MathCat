@@ -1,13 +1,16 @@
 import { Worksheet } from "@/types/worksheet"
+import { gzipSync, gunzipSync } from "zlib"
 
 /**
  * Encode a worksheet to a URL-safe string
- * Uses base64url encoding (RFC 4648 §5)
+ * Uses gzip compression + base64url encoding for minimal size
  */
 export function encodeWorksheetToURI(worksheet: Worksheet): string {
   const json = JSON.stringify(worksheet)
+  // Compress with gzip
+  const compressed = gzipSync(json)
   // Convert to base64
-  const base64 = Buffer.from(json).toString("base64")
+  const base64 = compressed.toString("base64")
   // Make URL-safe: replace + with -, / with _, remove =
   const base64url = base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
   return base64url
@@ -26,7 +29,9 @@ export function decodeWorksheetFromURI(encoded: string): Worksheet | null {
       base64 += "="
     }
     // Decode from base64
-    const json = Buffer.from(base64, "base64").toString("utf-8")
+    const compressed = Buffer.from(base64, "base64")
+    // Decompress with gunzip
+    const json = gunzipSync(compressed).toString("utf-8")
     const worksheet = JSON.parse(json) as Worksheet
 
     // Basic validation
