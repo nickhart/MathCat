@@ -1,4 +1,9 @@
-import { WorksheetProgress, SectionProgress } from "@/types/worksheet"
+import {
+  WorksheetProgress,
+  SectionProgress,
+  WorksheetSettings,
+  WorksheetSection,
+} from "@/types/worksheet"
 import { ProblemState } from "@/types/math"
 
 const STORAGE_KEY_PREFIX = "mathcat_worksheet_"
@@ -142,5 +147,23 @@ export function clearWorksheetProgress(worksheetId: string): void {
     localStorage.removeItem(getStorageKey(worksheetId))
   } catch (error) {
     console.error("Failed to clear worksheet progress:", error)
+  }
+}
+
+/**
+ * Merge worksheet settings with section settings
+ * Section settings take precedence over worksheet settings
+ */
+export function mergeWorksheetSettings(
+  worksheetSettings: WorksheetSettings,
+  section?: WorksheetSection
+): WorksheetSettings {
+  if (!section?.settings) {
+    return worksheetSettings
+  }
+
+  return {
+    ...worksheetSettings,
+    ...section.settings,
   }
 }

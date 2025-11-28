@@ -102,6 +102,9 @@ export function parseCSVToWorksheet(
         showMethodSelector: true,
         allowedMethods: ["partial-products", "area-model"],
         showHints: false,
+        showValidation: true,
+        showAllCells: false,
+        showPlaceholderZeros: false,
       },
     }
 

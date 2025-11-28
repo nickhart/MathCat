@@ -4,6 +4,7 @@ export interface WorksheetSection {
   id: string
   title: string
   problems: Problem[]
+  settings?: Partial<WorksheetSettings>
 }
 
 export interface Worksheet {
@@ -20,6 +21,9 @@ export interface WorksheetSettings {
   showMethodSelector: boolean
   allowedMethods: SolvingMethod[]
   showHints: boolean
+  showValidation?: boolean
+  showAllCells?: boolean
+  showPlaceholderZeros?: boolean
   timeLimit?: number
   requireSequentialCompletion?: boolean
 }

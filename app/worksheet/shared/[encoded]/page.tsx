@@ -72,7 +72,11 @@ export default function SharedWorksheetPage() {
           📤 You&apos;re viewing a shared worksheet. Your progress is saved locally on this device.
         </p>
       </div>
-      <WorksheetOverview worksheet={worksheet} progress={progress} />
+      <WorksheetOverview
+        worksheet={worksheet}
+        progress={progress}
+        worksheetEncoded={params.encoded as string}
+      />
     </div>
   )
 }

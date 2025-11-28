@@ -7,12 +7,18 @@
     "showMethodSelector": true,
     "allowedMethods": ["partial-products", "area-model", "classic-algorithm"],
     "showHints": false,
+    "showValidation": true,
+    "showAllCells": false,
+    "showPlaceholderZeros": false,
     "requireSequentialCompletion": false
   },
   "sections": [
     {
       "id": "section-1",
       "title": "Two-digit by One-digit",
+      "settings": {
+        "showPlaceholderZeros": false
+      },
       "problems": [
         {
           "id": "prob-1-1",
@@ -40,6 +46,9 @@
     {
       "id": "section-2",
       "title": "Two-digit by Two-digit",
+      "settings": {
+        "showPlaceholderZeros": false
+      },
       "problems": [
         {
           "id": "prob-2-1",
@@ -67,6 +76,9 @@
     {
       "id": "section-3",
       "title": "Challenge Problems",
+      "settings": {
+        "showPlaceholderZeros": true
+      },
       "problems": [
         {
           "id": "prob-3-1",

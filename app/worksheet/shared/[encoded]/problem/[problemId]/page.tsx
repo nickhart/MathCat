@@ -6,49 +6,60 @@ import { Worksheet, WorksheetProgress } from "@/types/worksheet"
 import { Problem, ProblemState, SolvingMethod } from "@/types/math"
 import { ProblemView } from "@/components/worksheet/ProblemView"
 import { SectionComplete } from "@/components/worksheet/SectionComplete"
+import { decodeWorksheetFromURI } from "@/lib/worksheet-uri"
 import {
   loadWorksheetProgress,
+  initializeWorksheetProgress,
   saveWorksheetProgress,
   updateProblemState,
   isSectionComplete,
   mergeWorksheetSettings,
 } from "@/lib/worksheet-storage"
-import sampleWorksheet from "@/data/sample-worksheet.json"
 
-export default function ProblemPage() {
+export default function SharedWorksheetProblemPage() {
   const params = useParams()
   const router = useRouter()
   const problemId = params.problemId as string
+  const encoded = params.encoded as string
 
+  const [worksheet, setWorksheet] = useState<Worksheet | null>(null)
   const [progress, setProgress] = useState<WorksheetProgress | null>(null)
   const [problem, setProblem] = useState<Problem | null>(null)
   const [showCelebration, setShowCelebration] = useState(false)
   const [completedSectionTitle, setCompletedSectionTitle] = useState("")
   const [justCompleted, setJustCompleted] = useState(false)
-  const worksheet = sampleWorksheet as Worksheet
 
   useEffect(() => {
+    // Decode worksheet from URI
+    const decodedWorksheet = decodeWorksheetFromURI(encoded)
+    if (!decodedWorksheet) {
+      router.push("/")
+      return
+    }
+    setWorksheet(decodedWorksheet)
+
     // Reset completion state when problem changes
     setJustCompleted(false)
 
     // Find the problem
-    const foundProblem = worksheet.problems.find((p) => p.id === problemId)
+    const foundProblem = decodedWorksheet.problems.find((p) => p.id === problemId)
     if (!foundProblem) {
-      // Redirect to worksheet if problem not found
-      router.push("/worksheet")
+      // Redirect back to worksheet if problem not found
+      router.push(`/worksheet/shared/${encoded}`)
       return
     }
     setProblem(foundProblem)
 
-    // Load progress
-    const loadedProgress = loadWorksheetProgress(worksheet.id)
-    if (loadedProgress) {
-      setProgress(loadedProgress)
+    // Load or initialize progress
+    let loadedProgress = loadWorksheetProgress(decodedWorksheet.id)
+    if (!loadedProgress) {
+      loadedProgress = initializeWorksheetProgress(decodedWorksheet.id)
     }
-  }, [problemId, worksheet, router])
+    setProgress(loadedProgress)
+  }, [problemId, encoded, router])
 
   const handleComplete = (isCorrect: boolean, method: SolvingMethod) => {
-    if (!progress || !problem) return
+    if (!progress || !problem || !worksheet) return
 
     // Find which section this problem belongs to
     const section = worksheet.sections?.find((s) => s.problems.some((p) => p.id === problemId))
@@ -93,7 +104,7 @@ export default function ProblemPage() {
     }
   }
 
-  if (!problem || !progress) {
+  if (!problem || !progress || !worksheet) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg text-muted-foreground">Loading problem...</div>
@@ -128,6 +139,7 @@ export default function ProblemPage() {
       <ProblemView
         problem={problem}
         worksheetId={worksheet.id}
+        worksheetEncoded={encoded}
         settings={mergedSettings}
         initialMethod={initialMethod}
         nextProblemId={nextProblemId}

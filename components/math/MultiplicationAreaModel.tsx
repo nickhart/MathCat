@@ -9,6 +9,7 @@ export interface MultiplicationAreaModelProps {
   multiplier: number
   onComplete?: (isCorrect: boolean) => void
   showValidation?: boolean
+  showAllCells?: boolean
   className?: string
 }
 
@@ -25,6 +26,7 @@ export function MultiplicationAreaModel({
   multiplier,
   onComplete,
   showValidation = true,
+  showAllCells = false,
   className,
 }: MultiplicationAreaModelProps) {
   // Break number into place value components
@@ -264,6 +266,7 @@ export function MultiplicationAreaModel({
             expectedSum={expectedSum}
             onComplete={onComplete}
             showValidation={showValidation}
+            showAllCells={showAllCells}
             rowInputValues={rowInputValues}
             onRowInputChange={handleAdditionRowChange}
             onRowFocus={handleAdditionRowFocus}

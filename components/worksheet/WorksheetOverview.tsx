@@ -11,9 +11,14 @@ import { copyShareableURL } from "@/lib/worksheet-uri"
 export interface WorksheetOverviewProps {
   worksheet: Worksheet
   progress: WorksheetProgress
+  worksheetEncoded?: string
 }
 
-export function WorksheetOverview({ worksheet, progress }: WorksheetOverviewProps) {
+export function WorksheetOverview({
+  worksheet,
+  progress,
+  worksheetEncoded,
+}: WorksheetOverviewProps) {
   const [shareStatus, setShareStatus] = useState<"idle" | "copying" | "copied">("idle")
 
   const handleShare = async () => {
@@ -56,6 +61,12 @@ export function WorksheetOverview({ worksheet, progress }: WorksheetOverviewProp
       total: allProblems.length,
       percentage: Math.round((completed / allProblems.length) * 100),
     }
+  }
+
+  const getProblemUrl = (problemId: string) => {
+    return worksheetEncoded
+      ? `/worksheet/shared/${worksheetEncoded}/problem/${problemId}`
+      : `/worksheet/problem/${problemId}`
   }
 
   const overall = overallProgress()
@@ -148,7 +159,7 @@ export function WorksheetOverview({ worksheet, progress }: WorksheetOverviewProp
                     return (
                       <Link
                         key={problem.id}
-                        href={`/worksheet/problem/${problem.id}`}
+                        href={getProblemUrl(problem.id)}
                         className={cn(
                           "border-2 rounded-lg p-4 hover:shadow-md transition-all",
                           status === "correct" && "border-green-500 bg-green-50 hover:bg-green-100",
@@ -188,7 +199,7 @@ export function WorksheetOverview({ worksheet, progress }: WorksheetOverviewProp
             return (
               <Link
                 key={problem.id}
-                href={`/worksheet/problem/${problem.id}`}
+                href={getProblemUrl(problem.id)}
                 className={cn(
                   "border-2 rounded-lg p-4 hover:shadow-md transition-all",
                   status === "correct" && "border-green-500 bg-green-50 hover:bg-green-100",

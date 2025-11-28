@@ -62,7 +62,8 @@ export default function ImportWorksheetPage() {
     if (!worksheet) return
     const progress = initializeWorksheetProgress(worksheet.id)
     saveWorksheetProgress(progress)
-    router.push("/worksheet")
+    const url = generateShareableURL(worksheet)
+    router.push(url)
   }
 
   return (

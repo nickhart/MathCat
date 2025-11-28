@@ -1,29 +1,32 @@
 "use client"
 
-import { MultiplicationAreaModel } from "@/components/math/MultiplicationAreaModel"
+import { MultiplicationClassicAlgorithm } from "@/components/math/MultiplicationClassicAlgorithm"
 
-export interface AreaModelViewProps {
+export interface ClassicAlgorithmViewProps {
   multiplicand: number
   multiplier: number
   onComplete?: (isCorrect: boolean) => void
   showValidation?: boolean
   showAllCells?: boolean
+  showPlaceholderZeros?: boolean
 }
 
-export function AreaModelView({
+export function ClassicAlgorithmView({
   multiplicand,
   multiplier,
   onComplete,
   showValidation = true,
   showAllCells = false,
-}: AreaModelViewProps) {
+  showPlaceholderZeros = false,
+}: ClassicAlgorithmViewProps) {
   return (
-    <MultiplicationAreaModel
+    <MultiplicationClassicAlgorithm
       multiplicand={multiplicand}
       multiplier={multiplier}
       onComplete={onComplete}
       showValidation={showValidation}
       showAllCells={showAllCells}
+      showPlaceholderZeros={showPlaceholderZeros}
     />
   )
 }

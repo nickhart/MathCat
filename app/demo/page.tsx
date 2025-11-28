@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { MultiplicationPartialProductsGrid } from "@/components/math/MultiplicationPartialProductsGrid"
 import { MultiplicationAreaModel } from "@/components/math/MultiplicationAreaModel"
+import { MultiplicationClassicAlgorithm } from "@/components/math/MultiplicationClassicAlgorithm"
 
 const PRESET_PROBLEMS = [
   { multiplicand: 23, multiplier: 45, label: "23 × 45 (2×2 digits)" },
@@ -13,7 +14,7 @@ const PRESET_PROBLEMS = [
   { multiplicand: 3456, multiplier: 78, label: "3456 × 78 (4×2 digits)" },
 ]
 
-type MethodType = "partial-products" | "area-model"
+type MethodType = "partial-products" | "area-model" | "classic-algorithm"
 
 export default function DemoPage() {
   const [method, setMethod] = useState<MethodType>("partial-products")
@@ -23,6 +24,7 @@ export default function DemoPage() {
   const [customMultiplier, setCustomMultiplier] = useState("45")
   const [showValidation, setShowValidation] = useState(false)
   const [showAllCells, setShowAllCells] = useState(false)
+  const [showPlaceholderZeros, setShowPlaceholderZeros] = useState(false)
 
   const handlePresetChange = (preset: (typeof PRESET_PROBLEMS)[0]) => {
     setMultiplicand(preset.multiplicand)
@@ -86,6 +88,16 @@ export default function DemoPage() {
               >
                 Area Model
               </button>
+              <button
+                onClick={() => setMethod("classic-algorithm")}
+                className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                  method === "classic-algorithm"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted hover:bg-muted/80"
+                }`}
+              >
+                Classic Algorithm
+              </button>
             </div>
           </div>
 
@@ -107,8 +119,8 @@ export default function DemoPage() {
             </p>
           </div>
 
-          {/* Show all cells toggle (for Grid layout) */}
-          {method === "partial-products" && (
+          {/* Show all cells toggle (for methods that use AdditionGrid) */}
+          {(method === "partial-products" || method === "area-model") && (
             <div>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -121,6 +133,25 @@ export default function DemoPage() {
               </label>
               <p className="text-xs text-muted-foreground mt-1 ml-8">
                 Turn this on to show input cells for leading zeros instead of blank spaces
+              </p>
+            </div>
+          )}
+
+          {/* Show placeholder zeros toggle (for classic algorithm) */}
+          {method === "classic-algorithm" && (
+            <div>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showPlaceholderZeros}
+                  onChange={(e) => setShowPlaceholderZeros(e.target.checked)}
+                  className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                />
+                <span className="text-sm font-semibold">Show placeholder zeros</span>
+              </label>
+              <p className="text-xs text-muted-foreground mt-1 ml-8">
+                Turn this on to show trailing zeros in partial products (helpful for beginners
+                learning place value)
               </p>
             </div>
           )}
@@ -200,6 +231,18 @@ export default function DemoPage() {
               multiplicand={multiplicand}
               multiplier={multiplier}
               showValidation={showValidation}
+              showAllCells={showAllCells}
+            />
+          )}
+
+          {method === "classic-algorithm" && (
+            <MultiplicationClassicAlgorithm
+              key={`ca-${multiplicand}-${multiplier}`}
+              multiplicand={multiplicand}
+              multiplier={multiplier}
+              showValidation={showValidation}
+              showAllCells={showAllCells}
+              showPlaceholderZeros={showPlaceholderZeros}
             />
           )}
         </div>
