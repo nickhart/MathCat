@@ -13,14 +13,14 @@ const customJestConfig = {
     "^@/(.*)$": "<rootDir>/$1",
   },
   collectCoverageFrom: [
-    "app/**/*.{js,jsx,ts,tsx}",
-    "components/**/*.{js,jsx,ts,tsx}",
     "lib/**/*.{js,jsx,ts,tsx}",
     "!**/*.d.ts",
+    "!**/*.stories.{js,jsx,ts,tsx}",
     "!**/node_modules/**",
     "!**/.next/**",
     "!**/coverage/**",
     "!**/jest.config.js",
+    "!**/index.ts",
   ],
   coverageThreshold: {
     global: {
