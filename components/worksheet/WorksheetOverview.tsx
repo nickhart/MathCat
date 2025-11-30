@@ -2,23 +2,28 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Worksheet, WorksheetProgress, WorksheetSection } from "@/types/worksheet"
 import { Problem } from "@/types/math"
 import { cn } from "@/lib/utils/cn"
-import { CheckCircle2, Circle, Share2, Check } from "lucide-react"
+import { CheckCircle2, Circle, Share2, Check, Printer } from "lucide-react"
 import { copyShareableURL } from "@/lib/worksheet-uri"
+import { StudentInfoForm } from "./StudentInfoForm"
 
 export interface WorksheetOverviewProps {
   worksheet: Worksheet
   progress: WorksheetProgress
   worksheetEncoded?: string
+  onProgressUpdate?: (updates: Partial<WorksheetProgress>) => void
 }
 
 export function WorksheetOverview({
   worksheet,
   progress,
   worksheetEncoded,
+  onProgressUpdate,
 }: WorksheetOverviewProps) {
+  const router = useRouter()
   const [shareStatus, setShareStatus] = useState<"idle" | "copying" | "copied">("idle")
 
   const handleShare = async () => {
@@ -31,6 +36,21 @@ export function WorksheetOverview({
       setShareStatus("idle")
     }
   }
+
+  const handlePrint = () => {
+    if (!progress.studentName) {
+      alert("Please enter your name before printing")
+      return
+    }
+
+    // Navigate to print view
+    const printUrl = worksheetEncoded
+      ? `/worksheet/shared/${worksheetEncoded}/print`
+      : "/worksheet/print"
+    router.push(printUrl)
+  }
+
+  const canPrint = !!progress.studentName
 
   const getSectionProgress = (section: WorksheetSection) => {
     const completed = section.problems.filter((problem) => {
@@ -72,40 +92,56 @@ export function WorksheetOverview({
   const overall = overallProgress()
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="max-w-4xl mx-auto p-6 space-y-8 print:p-0">
       {/* Header */}
-      <div className="space-y-2">
+      <div className="space-y-2 print:space-y-0">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-4xl font-bold">{worksheet.title}</h1>
+            <h1 className="text-4xl font-bold print:text-3xl">{worksheet.title}</h1>
             {worksheet.description && (
-              <p className="text-lg text-muted-foreground">{worksheet.description}</p>
+              <p className="text-lg text-muted-foreground print:hidden">{worksheet.description}</p>
             )}
           </div>
-          <button
-            onClick={handleShare}
-            disabled={shareStatus === "copying"}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors",
-              shareStatus === "copied"
-                ? "bg-green-600 text-white"
-                : "bg-blue-600 text-white hover:bg-blue-700"
-            )}
-          >
-            {shareStatus === "copied" ? (
-              <>
-                <Check className="w-4 h-4" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Share2 className="w-4 h-4" />
-                Share
-              </>
-            )}
-          </button>
+          <div className="flex gap-2 print:hidden">
+            <button
+              onClick={handlePrint}
+              disabled={!canPrint}
+              title={canPrint ? "Print all work" : "Enter your name to print"}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors",
+                canPrint
+                  ? "bg-purple-600 text-white hover:bg-purple-700"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              )}
+            >
+              <Printer className="w-4 h-4" />
+              Print All Work
+            </button>
+            <button
+              onClick={handleShare}
+              disabled={shareStatus === "copying"}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors",
+                shareStatus === "copied"
+                  ? "bg-green-600 text-white"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              )}
+            >
+              {shareStatus === "copied" ? (
+                <>
+                  <Check className="w-4 h-4" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </>
+              )}
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex items-center gap-4 text-sm print:hidden">
           <div className="font-semibold">
             Progress: {overall.completed} / {overall.total} ({overall.percentage}%)
           </div>
@@ -117,6 +153,9 @@ export function WorksheetOverview({
           </div>
         </div>
       </div>
+
+      {/* Student Info */}
+      {onProgressUpdate && <StudentInfoForm progress={progress} onUpdate={onProgressUpdate} />}
 
       {/* Sections */}
       {worksheet.sections && worksheet.sections.length > 0 ? (

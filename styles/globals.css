@@ -60,3 +60,99 @@
       "calt" 1;
   }
 }
+
+/* Print Styles */
+@media print {
+  /* Page setup */
+  @page {
+    margin: 0.5in;
+    size: letter;
+  }
+
+  /* Reset to clean printing */
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Hide interactive elements */
+  button,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Remove hover effects */
+  a:hover {
+    color: black !important;
+  }
+
+  /* Prevent page breaks inside important elements */
+  tr,
+  img,
+  pre,
+  blockquote {
+    page-break-inside: avoid;
+  }
+
+  /* Ensure headers stay with content */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Add page breaks between sections if needed */
+  .print-page-break {
+    page-break-before: always;
+  }
+
+  /* Show links in parentheses */
+  a[href^="http"]:after {
+    content: " (" attr(href) ")";
+  }
+
+  /* Hide navigation links */
+  a[href^="#"]:after {
+    content: "";
+  }
+
+  /* Optimize font sizes for print */
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  h1 {
+    font-size: 24pt;
+  }
+
+  h2 {
+    font-size: 18pt;
+  }
+
+  h3 {
+    font-size: 14pt;
+  }
+
+  /* Make sure inputs show their values */
+  input[type="text"],
+  input[type="number"],
+  textarea {
+    border: none !important;
+    border-bottom: 1px solid #000 !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  /* Disable pointer events */
+  * {
+    pointer-events: none !important;
+  }
+}

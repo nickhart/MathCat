@@ -35,6 +35,8 @@ export interface WorksheetProgress {
   startedAt: string
   completedAt?: string
   sectionProgress: Record<string, SectionProgress>
+  studentName?: string
+  submissionDate?: string
 }
 
 export interface SectionProgress {

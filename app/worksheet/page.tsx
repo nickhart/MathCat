@@ -24,6 +24,14 @@ export default function WorksheetPage() {
     setProgress(loadedProgress)
   }, [worksheet.id])
 
+  const handleProgressUpdate = (updates: Partial<WorksheetProgress>) => {
+    if (!progress) return
+
+    const updatedProgress = { ...progress, ...updates }
+    setProgress(updatedProgress)
+    saveWorksheetProgress(updatedProgress)
+  }
+
   if (!progress) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -32,5 +40,11 @@ export default function WorksheetPage() {
     )
   }
 
-  return <WorksheetOverview worksheet={worksheet} progress={progress} />
+  return (
+    <WorksheetOverview
+      worksheet={worksheet}
+      progress={progress}
+      onProgressUpdate={handleProgressUpdate}
+    />
+  )
 }

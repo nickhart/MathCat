@@ -61,9 +61,9 @@ export function ProblemView({
     : null
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 print:bg-white print:min-h-0">
       {/* Header */}
-      <div className="bg-white border-b shadow-sm">
+      <div className="bg-white border-b shadow-sm print:hidden">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link
@@ -80,7 +80,7 @@ export function ProblemView({
 
       {/* Method Selector */}
       {settings.showMethodSelector && settings.allowedMethods.length > 1 && (
-        <div className="bg-white border-b">
+        <div className="bg-white border-b print:hidden">
           <div className="max-w-6xl mx-auto px-6 py-4">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-muted-foreground">Method:</span>
@@ -106,7 +106,7 @@ export function ProblemView({
       )}
 
       {/* Problem Content */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-8 print:px-0 print:py-4">
         <ProblemMethodView
           problem={problem}
           method={selectedMethod}
@@ -115,7 +115,7 @@ export function ProblemView({
         />
 
         {/* Navigation Controls */}
-        <div className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between">
+        <div className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between print:hidden">
           <Link
             href={worksheetUrl}
             className="flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"

@@ -4,7 +4,11 @@ import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Worksheet, WorksheetProgress } from "@/types/worksheet"
 import { decodeWorksheetFromURI } from "@/lib/worksheet-uri"
-import { loadWorksheetProgress, initializeWorksheetProgress } from "@/lib/worksheet-storage"
+import {
+  loadWorksheetProgress,
+  initializeWorksheetProgress,
+  saveWorksheetProgress,
+} from "@/lib/worksheet-storage"
 import { WorksheetOverview } from "@/components/worksheet/WorksheetOverview"
 
 export default function SharedWorksheetPage() {
@@ -55,6 +59,14 @@ export default function SharedWorksheetPage() {
     )
   }
 
+  const handleProgressUpdate = (updates: Partial<WorksheetProgress>) => {
+    if (!progress) return
+
+    const updatedProgress = { ...progress, ...updates }
+    setProgress(updatedProgress)
+    saveWorksheetProgress(updatedProgress)
+  }
+
   if (!worksheet || !progress) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -76,6 +88,7 @@ export default function SharedWorksheetPage() {
         worksheet={worksheet}
         progress={progress}
         worksheetEncoded={params.encoded as string}
+        onProgressUpdate={handleProgressUpdate}
       />
     </div>
   )
