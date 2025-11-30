@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { FileSpreadsheet, BookOpen, Sparkles } from "lucide-react"
+import { FileSpreadsheet, BookOpen, Sparkles, Wand2 } from "lucide-react"
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <Link
             href="/demo"
             className="group bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all border-2 border-transparent hover:border-purple-300"
@@ -28,6 +28,20 @@ export default function Home() {
             <p className="text-gray-600 text-sm">
               Explore multiplication methods including Partial Products and Area Model with
               interactive examples
+            </p>
+          </Link>
+
+          <Link
+            href="/worksheet/generate"
+            className="group bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all border-2 border-transparent hover:border-orange-300"
+          >
+            <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-lg mb-4 group-hover:bg-orange-200 transition-colors">
+              <Wand2 className="w-6 h-6 text-orange-600" />
+            </div>
+            <h2 className="text-xl font-bold mb-2">Generate Worksheet</h2>
+            <p className="text-gray-600 text-sm">
+              Create random multiplication worksheets with customizable difficulty levels and
+              settings
             </p>
           </Link>
 
@@ -73,6 +87,7 @@ export default function Home() {
               <li>Multiple solving methods: Partial Products, Area Model, and Classic Algorithm</li>
               <li>Interactive grid-based input for step-by-step problem solving</li>
               <li>Immediate validation feedback to help students learn from mistakes</li>
+              <li>Random worksheet generator with customizable difficulty levels</li>
               <li>Customizable worksheets via CSV import</li>
               <li>Shareable worksheet URLs for easy distribution</li>
               <li>Progress tracking to monitor completion</li>
