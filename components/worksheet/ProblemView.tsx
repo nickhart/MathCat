@@ -15,9 +15,11 @@ export interface ProblemViewProps {
   worksheetEncoded?: string
   settings: WorksheetSettings
   initialMethod?: SolvingMethod
+  initialUserInputs?: any
   nextProblemId?: string | null
   isProblemComplete?: boolean
-  onComplete?: (isCorrect: boolean, method: SolvingMethod) => void
+  onComplete?: (isCorrect: boolean, method: SolvingMethod, userInputs?: any) => void
+  onMethodChange?: (method: SolvingMethod) => void
 }
 
 export function ProblemView({
@@ -26,9 +28,11 @@ export function ProblemView({
   worksheetEncoded,
   settings,
   initialMethod,
+  initialUserInputs,
   nextProblemId,
   isProblemComplete,
   onComplete,
+  onMethodChange,
 }: ProblemViewProps) {
   const [selectedMethod, setSelectedMethod] = useState<SolvingMethod>(
     initialMethod || settings.allowedMethods[0] || "partial-products"
@@ -36,11 +40,12 @@ export function ProblemView({
 
   const handleMethodChange = (method: SolvingMethod) => {
     setSelectedMethod(method)
+    onMethodChange?.(method)
   }
 
-  const handleProblemComplete = (isCorrect: boolean) => {
+  const handleProblemComplete = (isCorrect: boolean, userInputs?: any) => {
     if (onComplete) {
-      onComplete(isCorrect, selectedMethod)
+      onComplete(isCorrect, selectedMethod, userInputs)
     }
   }
 
@@ -111,6 +116,7 @@ export function ProblemView({
           problem={problem}
           method={selectedMethod}
           settings={settings}
+          initialUserInputs={initialUserInputs}
           onComplete={handleProblemComplete}
         />
 
@@ -153,10 +159,17 @@ interface ProblemMethodViewProps {
   problem: Problem
   method: SolvingMethod
   settings: WorksheetSettings
-  onComplete?: (isCorrect: boolean) => void
+  initialUserInputs?: any
+  onComplete?: (isCorrect: boolean, userInputs?: any) => void
 }
 
-function ProblemMethodView({ problem, method, settings, onComplete }: ProblemMethodViewProps) {
+function ProblemMethodView({
+  problem,
+  method,
+  settings,
+  initialUserInputs,
+  onComplete,
+}: ProblemMethodViewProps) {
   if (problem.operation !== "multiplication") {
     return (
       <div className="text-center p-8 text-muted-foreground">
@@ -173,6 +186,7 @@ function ProblemMethodView({ problem, method, settings, onComplete }: ProblemMet
         <PartialProductsView
           multiplicand={multiplicand}
           multiplier={multiplier}
+          initialUserInputs={initialUserInputs}
           onComplete={onComplete}
           showValidation={settings.showValidation}
           showAllCells={settings.showAllCells}
@@ -184,6 +198,7 @@ function ProblemMethodView({ problem, method, settings, onComplete }: ProblemMet
         <AreaModelView
           multiplicand={multiplicand}
           multiplier={multiplier}
+          initialUserInputs={initialUserInputs}
           onComplete={onComplete}
           showValidation={settings.showValidation}
           showAllCells={settings.showAllCells}
@@ -195,10 +210,10 @@ function ProblemMethodView({ problem, method, settings, onComplete }: ProblemMet
         <ClassicAlgorithmView
           multiplicand={multiplicand}
           multiplier={multiplier}
+          initialUserInputs={initialUserInputs}
           onComplete={onComplete}
           showValidation={settings.showValidation}
           showAllCells={settings.showAllCells}
-          showPlaceholderZeros={settings.showPlaceholderZeros}
         />
       )
 

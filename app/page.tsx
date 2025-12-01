@@ -94,6 +94,13 @@ export default function Home() {
             </ul>
           </div>
         </div>
+
+        {/* Footer with Debug Link */}
+        <div className="mt-8 text-center">
+          <Link href="/debug" className="text-sm text-gray-400 hover:text-gray-600 underline">
+            Debug Console
+          </Link>
+        </div>
       </div>
     </main>
   )

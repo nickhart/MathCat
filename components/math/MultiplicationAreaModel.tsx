@@ -4,10 +4,16 @@ import { useState } from "react"
 import { cn } from "@/lib/utils/cn"
 import { AdditionGrid, AdditionGridRow } from "@/components/math/AdditionGrid"
 
+export interface MultiplicationAreaModelUserInputs {
+  cellInputs: Record<string, string>
+  additionInputs: any
+}
+
 export interface MultiplicationAreaModelProps {
   multiplicand: number
   multiplier: number
-  onComplete?: (isCorrect: boolean) => void
+  initialUserInputs?: MultiplicationAreaModelUserInputs
+  onComplete?: (isCorrect: boolean, userInputs?: MultiplicationAreaModelUserInputs) => void
   showValidation?: boolean
   showAllCells?: boolean
   className?: string
@@ -24,6 +30,7 @@ interface GridCell {
 export function MultiplicationAreaModel({
   multiplicand,
   multiplier,
+  initialUserInputs,
   onComplete,
   showValidation = true,
   showAllCells = false,
@@ -78,7 +85,9 @@ export function MultiplicationAreaModel({
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null)
 
   // State for user inputs in the area model grid
-  const [cellInputs, setCellInputs] = useState<Record<string, string>>({})
+  const [cellInputs, setCellInputs] = useState<Record<string, string>>(
+    initialUserInputs?.cellInputs || {}
+  )
 
   // State to track addition grid inputs separately (to preserve DigitGrid format during editing)
   const [additionGridInputs, setAdditionGridInputs] = useState<Record<number, string>>({})
@@ -264,7 +273,16 @@ export function MultiplicationAreaModel({
           <AdditionGrid
             rows={additionRows}
             expectedSum={expectedSum}
-            onComplete={onComplete}
+            initialUserInputs={initialUserInputs?.additionInputs}
+            onComplete={(isCorrect, additionInputs) => {
+              if (onComplete) {
+                const userInputs: MultiplicationAreaModelUserInputs = {
+                  cellInputs,
+                  additionInputs,
+                }
+                onComplete(isCorrect, userInputs)
+              }
+            }}
             showValidation={showValidation}
             showAllCells={showAllCells}
             rowInputValues={rowInputValues}

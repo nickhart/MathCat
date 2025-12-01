@@ -47,7 +47,39 @@ export default function ProblemPage() {
     }
   }, [problemId, worksheet, router])
 
-  const handleComplete = (isCorrect: boolean, method: SolvingMethod) => {
+  const handleMethodChange = (method: SolvingMethod) => {
+    if (!progress || !problem) return
+
+    // Find which section this problem belongs to
+    const section = worksheet.sections?.find((s) => s.problems.some((p) => p.id === problemId))
+    const sectionProblemIds = section?.problems.map((p) => p.id)
+
+    // Get existing state or create new one
+    const existingState = progress.problemStates[problemId]
+    const problemState: ProblemState = {
+      ...existingState,
+      problemId: problem.id,
+      currentMethod: method,
+      userInputs: existingState?.userInputs || {},
+      isComplete: existingState?.isComplete || false,
+      isCorrect: existingState?.isCorrect,
+    }
+
+    // Update progress
+    const updatedProgress = updateProblemState(
+      progress,
+      problemId,
+      problemState,
+      section?.id,
+      sectionProblemIds
+    )
+
+    // Save progress
+    saveWorksheetProgress(updatedProgress)
+    setProgress(updatedProgress)
+  }
+
+  const handleComplete = (isCorrect: boolean, method: SolvingMethod, userInputs?: any) => {
     if (!progress || !problem) return
 
     // Find which section this problem belongs to
@@ -58,7 +90,7 @@ export default function ProblemPage() {
     const problemState: ProblemState = {
       problemId: problem.id,
       currentMethod: method,
-      userInputs: {},
+      userInputs: userInputs || {},
       isComplete: true,
       isCorrect,
     }
@@ -130,9 +162,11 @@ export default function ProblemPage() {
         worksheetId={worksheet.id}
         settings={mergedSettings}
         initialMethod={initialMethod}
+        initialUserInputs={problemState?.userInputs}
         nextProblemId={nextProblemId}
         isProblemComplete={isProblemComplete}
         onComplete={handleComplete}
+        onMethodChange={handleMethodChange}
       />
       <SectionComplete
         sectionTitle={completedSectionTitle}

@@ -2,7 +2,6 @@
 
 import { Worksheet, WorksheetProgress } from "@/types/worksheet"
 import { Problem } from "@/types/math"
-import { PartialProductsView, AreaModelView, ClassicAlgorithmView } from "./methods"
 
 export interface WorksheetPrintViewProps {
   worksheet: Worksheet
@@ -13,74 +12,81 @@ export function WorksheetPrintView({ worksheet, progress }: WorksheetPrintViewPr
   const allProblems = worksheet.sections?.flatMap((s) => s.problems) || worksheet.problems
 
   return (
-    <div className="max-w-7xl mx-auto p-8 print:p-0">
-      {/* Header with Student Info - Print Only */}
-      <div className="mb-8 pb-4 border-b-2 border-gray-800 print:mb-6">
-        <h1 className="text-3xl font-bold mb-4 print:text-2xl">{worksheet.title}</h1>
-        <div className="flex justify-between items-center">
-          <div className="flex gap-8">
-            <div>
-              <span className="font-semibold">Name:</span>{" "}
-              <span className="ml-2 border-b border-gray-400 inline-block min-w-[200px]">
-                {progress.studentName || ""}
-              </span>
-            </div>
-            <div>
-              <span className="font-semibold">Date:</span>{" "}
-              <span className="ml-2">{progress.submissionDate || ""}</span>
-            </div>
+    <div className="max-w-7xl mx-auto p-8 print:p-4">
+      {/* Header with Student Info */}
+      <div className="mb-6 pb-3 border-b-2 border-gray-800">
+        <h1 className="text-2xl font-bold mb-3">{worksheet.title}</h1>
+        <div className="flex justify-between items-center text-base">
+          <div>
+            <span className="font-semibold">Name:</span>{" "}
+            <span className="ml-2">{progress.studentName || ""}</span>
+          </div>
+          <div>
+            <span className="font-semibold">Date:</span>{" "}
+            <span className="ml-2">{progress.submissionDate || ""}</span>
           </div>
         </div>
       </div>
 
       {/* Problems by Section */}
       {worksheet.sections && worksheet.sections.length > 0 ? (
-        <div className="space-y-12 print:space-y-8">
-          {worksheet.sections.map((section) => (
-            <div key={section.id} className="print:page-break-inside-avoid">
-              <h2 className="text-2xl font-bold mb-6 print:text-xl print:mb-4">{section.title}</h2>
-              <div className="space-y-10 print:space-y-6">
-                {section.problems.map((problem) => (
-                  <ProblemWorkDisplay
-                    key={problem.id}
-                    problem={problem}
-                    progress={progress}
-                    settings={section.settings || worksheet.settings}
-                  />
-                ))}
+        <div className="space-y-8">
+          {worksheet.sections.map((section, sectionIdx) => {
+            const sectionProblems = section.problems.map((problem, probIdx) => ({
+              problem,
+              number:
+                sectionIdx === 0
+                  ? probIdx + 1
+                  : worksheet
+                      .sections!.slice(0, sectionIdx)
+                      .reduce((sum, s) => sum + s.problems.length, 0) +
+                    probIdx +
+                    1,
+            }))
+
+            return (
+              <div key={section.id} className="print:page-break-inside-avoid">
+                <h2 className="text-lg font-bold mb-4 pb-2 border-b border-gray-400">
+                  {section.title}
+                </h2>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+                  {sectionProblems.map(({ problem, number }) => (
+                    <ProblemWorkDisplay
+                      key={problem.id}
+                      problem={problem}
+                      problemNumber={number}
+                      progress={progress}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       ) : (
         /* No sections - flat list */
-        <div className="space-y-10 print:space-y-6">
-          {allProblems.map((problem) => (
+        <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+          {allProblems.map((problem, idx) => (
             <ProblemWorkDisplay
               key={problem.id}
               problem={problem}
+              problemNumber={idx + 1}
               progress={progress}
-              settings={worksheet.settings}
             />
           ))}
         </div>
       )}
-
-      {/* Print footer with page numbers */}
-      <div className="hidden print:block mt-8 pt-4 border-t border-gray-300 text-center text-sm text-gray-600">
-        {worksheet.title}
-      </div>
     </div>
   )
 }
 
 interface ProblemWorkDisplayProps {
   problem: Problem
+  problemNumber: number
   progress: WorksheetProgress
-  settings: any
 }
 
-function ProblemWorkDisplay({ problem, progress, settings }: ProblemWorkDisplayProps) {
+function ProblemWorkDisplay({ problem, problemNumber, progress }: ProblemWorkDisplayProps) {
   const state = progress.problemStates[problem.id]
 
   if (!state || problem.operation !== "multiplication") {
@@ -88,72 +94,168 @@ function ProblemWorkDisplay({ problem, progress, settings }: ProblemWorkDisplayP
   }
 
   const [multiplicand, multiplier] = problem.operands
-  const method = state.currentMethod
-
-  const methodLabels = {
-    "partial-products": "Partial Products",
-    "area-model": "Area Model",
-    "classic-algorithm": "Classic Algorithm",
-  } as const
 
   return (
-    <div className="border-2 border-gray-300 rounded-lg p-6 print:border-gray-400 print:p-4 print:page-break-inside-avoid">
-      {/* Problem Header */}
-      <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-300">
-        <div className="flex items-center gap-4">
-          <span className="text-lg font-semibold">Problem {problem.id}</span>
-          <span className="text-2xl font-mono font-bold">
-            {multiplicand} × {multiplier}
-          </span>
-        </div>
-        <div className="text-sm text-gray-600">
-          Method: {methodLabels[method as keyof typeof methodLabels] || method}
-        </div>
+    <div className="print:page-break-inside-avoid">
+      <div className="flex items-baseline gap-2 mb-2">
+        <span className="font-semibold text-sm">{problemNumber}.</span>
+        <span className="font-mono text-base font-bold">
+          {multiplicand} × {multiplier}
+        </span>
+        {state.isComplete && <span className="text-xs ml-2">{state.isCorrect ? "✓" : "✗"}</span>}
       </div>
 
-      {/* Render the work based on method */}
-      <div className="mt-4">
-        {method === "partial-products" && (
-          <PartialProductsView
-            multiplicand={multiplicand}
-            multiplier={multiplier}
-            showValidation={false}
-            showAllCells={settings.showAllCells}
-          />
-        )}
-        {method === "area-model" && (
-          <AreaModelView
-            multiplicand={multiplicand}
-            multiplier={multiplier}
-            showValidation={false}
-            showAllCells={settings.showAllCells}
-          />
-        )}
-        {method === "classic-algorithm" && (
-          <ClassicAlgorithmView
-            multiplicand={multiplicand}
-            multiplier={multiplier}
-            showValidation={false}
-            showAllCells={settings.showAllCells}
-            showPlaceholderZeros={settings.showPlaceholderZeros}
-          />
-        )}
-      </div>
-
-      {/* Show correct/incorrect indicator */}
-      {state.isComplete && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div
-            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-              state.isCorrect
-                ? "bg-green-100 text-green-800 print:bg-transparent print:border print:border-green-600"
-                : "bg-red-100 text-red-800 print:bg-transparent print:border print:border-red-600"
-            }`}
-          >
-            {state.isCorrect ? "✓ Correct" : "✗ Needs Review"}
-          </div>
-        </div>
+      {/* Render work based on method */}
+      {state.currentMethod === "partial-products" && (
+        <PartialProductsWorkDisplay
+          multiplicand={multiplicand}
+          multiplier={multiplier}
+          userInputs={state.userInputs}
+          isCorrect={state.isCorrect || false}
+        />
       )}
+
+      {state.currentMethod === "classic-algorithm" && (
+        <ClassicAlgorithmWorkDisplay
+          multiplicand={multiplicand}
+          multiplier={multiplier}
+          userInputs={state.userInputs}
+          isCorrect={state.isCorrect || false}
+        />
+      )}
+
+      {state.currentMethod === "area-model" && (
+        <AreaModelWorkDisplay
+          multiplicand={multiplicand}
+          multiplier={multiplier}
+          userInputs={state.userInputs}
+          isCorrect={state.isCorrect || false}
+        />
+      )}
+    </div>
+  )
+}
+
+interface WorkDisplayProps {
+  multiplicand: number
+  multiplier: number
+  userInputs: any
+  isCorrect: boolean
+}
+
+function PartialProductsWorkDisplay({
+  multiplicand,
+  multiplier,
+  userInputs,
+  isCorrect: _isCorrect,
+}: WorkDisplayProps) {
+  if (!userInputs || !userInputs.inputs) {
+    return <div className="font-mono text-sm text-gray-600">No work saved</div>
+  }
+
+  const { inputs, sumInput } = userInputs
+  const maxWidth = (multiplicand * multiplier).toString().length + 3
+
+  return (
+    <div className="font-mono text-xs leading-relaxed">
+      {/* Partial product rows */}
+      {Object.entries(inputs).map(([idx, value]: [string, any]) => (
+        <div key={idx} className="text-right" style={{ width: `${maxWidth}ch` }}>
+          {String(value || "___").padStart(maxWidth)}
+        </div>
+      ))}
+
+      {/* Line */}
+      <div className="border-t border-gray-800 my-1" style={{ width: `${maxWidth}ch` }} />
+
+      {/* Sum */}
+      <div className="text-right font-bold" style={{ width: `${maxWidth}ch` }}>
+        {String(sumInput || "___").padStart(maxWidth)}
+      </div>
+    </div>
+  )
+}
+
+function ClassicAlgorithmWorkDisplay({
+  multiplicand,
+  multiplier,
+  userInputs,
+  isCorrect: _isCorrect,
+}: WorkDisplayProps) {
+  if (!userInputs || !userInputs.partialInputs) {
+    return <div className="font-mono text-sm text-gray-600">No work saved</div>
+  }
+
+  const { partialInputs, sumInput } = userInputs
+  const multiplicandStr = multiplicand.toString()
+  const multiplierStr = multiplier.toString()
+  const maxWidth =
+    Math.max(
+      multiplicandStr.length,
+      multiplierStr.length,
+      (multiplicand * multiplier).toString().length
+    ) + 3
+
+  return (
+    <div className="font-mono text-xs leading-relaxed">
+      {/* Problem */}
+      <div className="text-right" style={{ width: `${maxWidth}ch` }}>
+        {multiplicandStr.padStart(maxWidth)}
+      </div>
+      <div className="text-right" style={{ width: `${maxWidth}ch` }}>
+        {"× " + multiplierStr.padStart(maxWidth - 2)}
+      </div>
+      <div className="border-t border-gray-800" style={{ width: `${maxWidth}ch` }} />
+
+      {/* Partial products */}
+      {Object.entries(partialInputs).map(([idx, value]: [string, any]) => (
+        <div key={idx} className="text-right" style={{ width: `${maxWidth}ch` }}>
+          {String(value || "___").padStart(maxWidth)}
+        </div>
+      ))}
+
+      {Object.keys(partialInputs).length > 1 && (
+        <div className="border-t border-gray-800 my-1" style={{ width: `${maxWidth}ch` }} />
+      )}
+
+      {/* Final sum */}
+      <div className="text-right font-bold" style={{ width: `${maxWidth}ch` }}>
+        {String(sumInput || "___").padStart(maxWidth)}
+      </div>
+    </div>
+  )
+}
+
+function AreaModelWorkDisplay({
+  multiplicand,
+  multiplier,
+  userInputs,
+  isCorrect: _isCorrect,
+}: WorkDisplayProps) {
+  if (!userInputs || !userInputs.additionInputs || !userInputs.additionInputs.inputs) {
+    return <div className="font-mono text-sm text-gray-600">No work saved</div>
+  }
+
+  const { additionInputs } = userInputs
+  const { inputs, sumInput } = additionInputs
+  const maxWidth = (multiplicand * multiplier).toString().length + 3
+
+  return (
+    <div className="font-mono text-xs leading-relaxed">
+      {/* Area products */}
+      {Object.entries(inputs).map(([idx, value]: [string, any]) => (
+        <div key={idx} className="text-right" style={{ width: `${maxWidth}ch` }}>
+          {String(value || "___").padStart(maxWidth)}
+        </div>
+      ))}
+
+      {/* Line */}
+      <div className="border-t border-gray-800 my-1" style={{ width: `${maxWidth}ch` }} />
+
+      {/* Sum */}
+      <div className="text-right font-bold" style={{ width: `${maxWidth}ch` }}>
+        {String(sumInput || "___").padStart(maxWidth)}
+      </div>
     </div>
   )
 }

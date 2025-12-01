@@ -24,7 +24,6 @@ export default function DemoPage() {
   const [customMultiplier, setCustomMultiplier] = useState("45")
   const [showValidation, setShowValidation] = useState(false)
   const [showAllCells, setShowAllCells] = useState(false)
-  const [showPlaceholderZeros, setShowPlaceholderZeros] = useState(false)
 
   const handlePresetChange = (preset: (typeof PRESET_PROBLEMS)[0]) => {
     setMultiplicand(preset.multiplicand)
@@ -137,25 +136,6 @@ export default function DemoPage() {
             </div>
           )}
 
-          {/* Show placeholder zeros toggle (for classic algorithm) */}
-          {method === "classic-algorithm" && (
-            <div>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showPlaceholderZeros}
-                  onChange={(e) => setShowPlaceholderZeros(e.target.checked)}
-                  className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
-                />
-                <span className="text-sm font-semibold">Show placeholder zeros</span>
-              </label>
-              <p className="text-xs text-muted-foreground mt-1 ml-8">
-                Turn this on to show trailing zeros in partial products (helpful for beginners
-                learning place value)
-              </p>
-            </div>
-          )}
-
           {/* Preset problems */}
           <div>
             <label className="block text-sm font-semibold mb-2">Preset Problems:</label>
@@ -242,7 +222,6 @@ export default function DemoPage() {
               multiplier={multiplier}
               showValidation={showValidation}
               showAllCells={showAllCells}
-              showPlaceholderZeros={showPlaceholderZeros}
             />
           )}
         </div>

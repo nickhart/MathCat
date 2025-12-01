@@ -5,28 +5,28 @@ import { MultiplicationClassicAlgorithm } from "@/components/math/Multiplication
 export interface ClassicAlgorithmViewProps {
   multiplicand: number
   multiplier: number
-  onComplete?: (isCorrect: boolean) => void
+  initialUserInputs?: any
+  onComplete?: (isCorrect: boolean, userInputs?: any) => void
   showValidation?: boolean
   showAllCells?: boolean
-  showPlaceholderZeros?: boolean
 }
 
 export function ClassicAlgorithmView({
   multiplicand,
   multiplier,
+  initialUserInputs,
   onComplete,
   showValidation = true,
   showAllCells = false,
-  showPlaceholderZeros = false,
 }: ClassicAlgorithmViewProps) {
   return (
     <MultiplicationClassicAlgorithm
       multiplicand={multiplicand}
       multiplier={multiplier}
+      initialUserInputs={initialUserInputs}
       onComplete={onComplete}
       showValidation={showValidation}
       showAllCells={showAllCells}
-      showPlaceholderZeros={showPlaceholderZeros}
     />
   )
 }

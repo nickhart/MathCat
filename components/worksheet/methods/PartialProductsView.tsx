@@ -5,7 +5,8 @@ import { MultiplicationPartialProductsGrid } from "@/components/math/Multiplicat
 export interface PartialProductsViewProps {
   multiplicand: number
   multiplier: number
-  onComplete?: (isCorrect: boolean) => void
+  initialUserInputs?: any
+  onComplete?: (isCorrect: boolean, userInputs?: any) => void
   showValidation?: boolean
   showAllCells?: boolean
 }
@@ -13,6 +14,7 @@ export interface PartialProductsViewProps {
 export function PartialProductsView({
   multiplicand,
   multiplier,
+  initialUserInputs,
   onComplete,
   showValidation = true,
   showAllCells = false,
@@ -21,6 +23,7 @@ export function PartialProductsView({
     <MultiplicationPartialProductsGrid
       multiplicand={multiplicand}
       multiplier={multiplier}
+      initialUserInputs={initialUserInputs}
       onComplete={onComplete}
       showValidation={showValidation}
       showAllCells={showAllCells}

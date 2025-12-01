@@ -5,7 +5,8 @@ import { MultiplicationAreaModel } from "@/components/math/MultiplicationAreaMod
 export interface AreaModelViewProps {
   multiplicand: number
   multiplier: number
-  onComplete?: (isCorrect: boolean) => void
+  initialUserInputs?: any
+  onComplete?: (isCorrect: boolean, userInputs?: any) => void
   showValidation?: boolean
   showAllCells?: boolean
 }
@@ -13,6 +14,7 @@ export interface AreaModelViewProps {
 export function AreaModelView({
   multiplicand,
   multiplier,
+  initialUserInputs,
   onComplete,
   showValidation = true,
   showAllCells = false,
@@ -21,6 +23,7 @@ export function AreaModelView({
     <MultiplicationAreaModel
       multiplicand={multiplicand}
       multiplier={multiplier}
+      initialUserInputs={initialUserInputs}
       onComplete={onComplete}
       showValidation={showValidation}
       showAllCells={showAllCells}

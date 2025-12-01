@@ -24,6 +24,8 @@ export interface DigitGridProps {
   numCells: number
   /** Indices where spacer cells should appear (non-interactive) */
   spacerIndices?: number[]
+  /** Indices where cells should be disabled but still show value */
+  disabledIndices?: number[]
   /** Disable all inputs */
   disabled?: boolean
   /** Auto-focus first cell on mount */
@@ -56,6 +58,7 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
     onChange,
     numCells,
     spacerIndices = [],
+    disabledIndices = [],
     disabled = false,
     autoFocus = false,
     autoAdvanceDirection = "right",
@@ -76,7 +79,12 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
   // Expose focusCell method to parent via ref
   useImperativeHandle(ref, () => ({
     focusCell: (index: number) => {
-      if (index >= 0 && index < numCells && !spacerIndices.includes(index)) {
+      if (
+        index >= 0 &&
+        index < numCells &&
+        !spacerIndices.includes(index) &&
+        !disabledIndices.includes(index)
+      ) {
         inputRefs.current[index]?.focus()
       }
     },
@@ -96,7 +104,7 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoFocus, disabled, spacerIndices])
+  }, [autoFocus, disabled, spacerIndices, disabledIndices])
 
   // Normalize value to fixed length, using space as placeholder for empty cells
   const normalizedValue = value.padEnd(numCells, " ")
@@ -107,11 +115,11 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
     .split("")
     .map((c) => (c === " " ? "" : c))
 
-  // Get next/previous input index, skipping spacers
+  // Get next/previous input index, skipping spacers and disabled cells
   const getNextInputIndex = (currentIndex: number, direction: 1 | -1): number => {
     let nextIndex = currentIndex + direction
     while (nextIndex >= 0 && nextIndex < numCells) {
-      if (!spacerIndices.includes(nextIndex)) {
+      if (!spacerIndices.includes(nextIndex) && !disabledIndices.includes(nextIndex)) {
         return nextIndex
       }
       nextIndex += direction
@@ -270,6 +278,7 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
     >
       {Array.from({ length: numCells }, (_, index) => {
         const isSpacer = spacerIndices.includes(index)
+        const isDisabled = disabledIndices.includes(index)
 
         if (isSpacer) {
           return <div key={index} className="w-12 h-12" aria-hidden="true" />
@@ -290,7 +299,7 @@ export const DigitGrid = forwardRef<DigitGridRef, DigitGridProps>(function Digit
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={(e) => handlePaste(index, e)}
-            disabled={disabled}
+            disabled={disabled || isDisabled}
             tabIndex={-1}
             onFocus={(e) => {
               e.target.select()

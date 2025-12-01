@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Worksheet, WorksheetProgress } from "@/types/worksheet"
 import { WorksheetPrintView } from "@/components/worksheet/WorksheetPrintView"
@@ -12,6 +12,7 @@ export default function WorksheetPrintPage() {
   const [progress, setProgress] = useState<WorksheetProgress | null>(null)
   const [error, setError] = useState<string | null>(null)
   const worksheet = sampleWorksheet as Worksheet
+  const hasTriggeredPrint = useRef(false)
 
   useEffect(() => {
     // Load progress
@@ -28,10 +29,13 @@ export default function WorksheetPrintPage() {
 
     setProgress(loadedProgress)
 
-    // Auto-print after a short delay to allow rendering
-    setTimeout(() => {
-      window.print()
-    }, 500)
+    // Auto-print after a short delay to allow rendering (only once)
+    if (!hasTriggeredPrint.current) {
+      hasTriggeredPrint.current = true
+      setTimeout(() => {
+        window.print()
+      }, 500)
+    }
   }, [worksheet.id])
 
   if (error) {

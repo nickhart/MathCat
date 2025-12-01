@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Worksheet, WorksheetProgress } from "@/types/worksheet"
 import { decodeWorksheetFromURI } from "@/lib/worksheet-uri"
@@ -13,6 +13,7 @@ export default function SharedWorksheetPrintPage() {
   const [worksheet, setWorksheet] = useState<Worksheet | null>(null)
   const [progress, setProgress] = useState<WorksheetProgress | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const hasTriggeredPrint = useRef(false)
 
   useEffect(() => {
     const encoded = params.encoded as string
@@ -44,10 +45,13 @@ export default function SharedWorksheetPrintPage() {
 
     setProgress(loadedProgress)
 
-    // Auto-print after a short delay to allow rendering
-    setTimeout(() => {
-      window.print()
-    }, 500)
+    // Auto-print after a short delay to allow rendering (only once)
+    if (!hasTriggeredPrint.current) {
+      hasTriggeredPrint.current = true
+      setTimeout(() => {
+        window.print()
+      }, 500)
+    }
   }, [params.encoded])
 
   if (error) {

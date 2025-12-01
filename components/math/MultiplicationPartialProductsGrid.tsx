@@ -6,7 +6,8 @@ import { AdditionGrid, AdditionGridRow } from "@/components/math/AdditionGrid"
 export interface MultiplicationPartialProductsGridProps {
   multiplicand: number
   multiplier: number
-  onComplete?: (isCorrect: boolean) => void
+  initialUserInputs?: any
+  onComplete?: (isCorrect: boolean, userInputs?: any) => void
   showValidation?: boolean
   showAllCells?: boolean
   className?: string
@@ -15,6 +16,7 @@ export interface MultiplicationPartialProductsGridProps {
 export function MultiplicationPartialProductsGrid({
   multiplicand,
   multiplier,
+  initialUserInputs,
   onComplete,
   showValidation = true,
   showAllCells = false,
@@ -71,6 +73,7 @@ export function MultiplicationPartialProductsGrid({
         <AdditionGrid
           rows={partialProducts}
           expectedSum={expectedSum}
+          initialUserInputs={initialUserInputs}
           onComplete={onComplete}
           showValidation={showValidation}
           showAllCells={showAllCells}

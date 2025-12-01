@@ -14,13 +14,24 @@ export interface AdditionGridRow {
   highlighted?: boolean
 }
 
+export interface AdditionGridUserInputs {
+  /** User input for each row */
+  inputs: Record<number, string>
+  /** Carry digits row */
+  carryDigits: string
+  /** Sum input */
+  sumInput: string
+}
+
 export interface AdditionGridProps {
   /** Array of rows to add together */
   rows: AdditionGridRow[]
   /** The expected sum of all rows */
   expectedSum: number
+  /** Initial user inputs to restore state */
+  initialUserInputs?: AdditionGridUserInputs
   /** Callback when user completes the problem */
-  onComplete?: (isCorrect: boolean) => void
+  onComplete?: (isCorrect: boolean, userInputs: AdditionGridUserInputs) => void
   /** Show validation feedback (green/red borders) */
   showValidation?: boolean
   /** Show all cells instead of using spacers for leading zeros */
@@ -38,6 +49,7 @@ export interface AdditionGridProps {
 export function AdditionGrid({
   rows,
   expectedSum,
+  initialUserInputs,
   onComplete,
   showValidation = true,
   showAllCells = false,
@@ -66,9 +78,9 @@ export function AdditionGrid({
   }, [onComplete])
 
   // State for user inputs
-  const [inputs, setInputs] = useState<Record<number, string>>({})
-  const [carryDigits, setCarryDigits] = useState("")
-  const [sumInput, setSumInput] = useState("")
+  const [inputs, setInputs] = useState<Record<number, string>>(initialUserInputs?.inputs || {})
+  const [carryDigits, setCarryDigits] = useState(initialUserInputs?.carryDigits || "")
+  const [sumInput, setSumInput] = useState(initialUserInputs?.sumInput || "")
 
   // Validation state
   const [isComplete, setIsComplete] = useState(false)
@@ -108,7 +120,12 @@ export function AdditionGrid({
       // Call onComplete when correctness state changes
       if (onCompleteRef.current && lastCompletionState.current !== correct) {
         lastCompletionState.current = correct
-        onCompleteRef.current(correct)
+        const userInputs: AdditionGridUserInputs = {
+          inputs,
+          carryDigits,
+          sumInput,
+        }
+        onCompleteRef.current(correct, userInputs)
       }
     } else {
       setIsComplete(false)
@@ -148,8 +165,10 @@ export function AdditionGrid({
       // Focus next number row
       rowRefs.current[nextRowIndex]?.focusCell(0)
     } else {
-      // Last number row, focus carry row
-      carryRowRef.current?.focusCell(0)
+      // Last number row, skip carry row and focus sum row (rightmost cell)
+      if (sumRowRef.current) {
+        sumRowRef.current.focusCell(maxDigits)
+      }
     }
   }
 
