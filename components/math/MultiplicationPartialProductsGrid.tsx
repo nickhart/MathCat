@@ -3,11 +3,18 @@
 import { cn } from "@/lib/utils/cn"
 import { AdditionGrid, AdditionGridRow } from "@/components/math/AdditionGrid"
 
+export interface MultiplicationPartialProductsGridUserInputs {
+  additionInputs: any
+}
+
 export interface MultiplicationPartialProductsGridProps {
   multiplicand: number
   multiplier: number
-  initialUserInputs?: any
-  onComplete?: (isCorrect: boolean, userInputs?: any) => void
+  initialUserInputs?: MultiplicationPartialProductsGridUserInputs
+  onComplete?: (
+    isCorrect: boolean,
+    userInputs?: MultiplicationPartialProductsGridUserInputs
+  ) => void
   showValidation?: boolean
   showAllCells?: boolean
   className?: string
@@ -73,8 +80,15 @@ export function MultiplicationPartialProductsGrid({
         <AdditionGrid
           rows={partialProducts}
           expectedSum={expectedSum}
-          initialUserInputs={initialUserInputs}
-          onComplete={onComplete}
+          initialUserInputs={initialUserInputs?.additionInputs}
+          onComplete={(isCorrect, additionInputs) => {
+            if (onComplete) {
+              const userInputs: MultiplicationPartialProductsGridUserInputs = {
+                additionInputs,
+              }
+              onComplete(isCorrect, userInputs)
+            }
+          }}
           showValidation={showValidation}
           showAllCells={showAllCells}
         />

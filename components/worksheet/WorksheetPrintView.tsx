@@ -149,11 +149,12 @@ function PartialProductsWorkDisplay({
   userInputs,
   isCorrect: _isCorrect,
 }: WorkDisplayProps) {
-  if (!userInputs || !userInputs.inputs) {
+  if (!userInputs || !userInputs.additionInputs || !userInputs.additionInputs.inputs) {
     return <div className="font-mono text-sm text-gray-600">No work saved</div>
   }
 
-  const { inputs, sumInput } = userInputs
+  const { additionInputs } = userInputs
+  const { inputs, sumInput } = additionInputs
   const maxWidth = (multiplicand * multiplier).toString().length + 3
 
   return (

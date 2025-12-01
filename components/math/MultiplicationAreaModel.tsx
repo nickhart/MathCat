@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils/cn"
 import { AdditionGrid, AdditionGridRow } from "@/components/math/AdditionGrid"
 
 export interface MultiplicationAreaModelUserInputs {
-  cellInputs: Record<string, string>
   additionInputs: any
 }
 
@@ -81,13 +80,34 @@ export function MultiplicationAreaModel({
   const maxDigits = expectedSum.toString().length
   const totalCells = maxDigits + 1
 
+  // Helper to extract just the number from a right-aligned DigitGrid string
+  const fromRightAlignedString = (value: string): string => {
+    if (!value) return ""
+    // Remove all spaces
+    return value.replace(/\s/g, "")
+  }
+
   // State for selected cell (to highlight corresponding addition row)
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null)
 
-  // State for user inputs in the area model grid
-  const [cellInputs, setCellInputs] = useState<Record<string, string>>(
-    initialUserInputs?.cellInputs || {}
-  )
+  // State for user inputs in the area model grid (ephemeral - not saved, initialized from additionInputs)
+  const [cellInputs, setCellInputs] = useState<Record<string, string>>(() => {
+    if (!initialUserInputs?.additionInputs?.inputs) return {}
+
+    const cellInputs: Record<string, string> = {}
+    const additionInputs = initialUserInputs.additionInputs.inputs
+
+    gridCells.forEach((cell, index) => {
+      const additionValue = additionInputs[index]
+      if (additionValue) {
+        const key = `${cell.row}-${cell.col}`
+        const numericValue = fromRightAlignedString(additionValue)
+        cellInputs[key] = numericValue
+      }
+    })
+
+    return cellInputs
+  })
 
   // State to track addition grid inputs separately (to preserve DigitGrid format during editing)
   const [additionGridInputs, setAdditionGridInputs] = useState<Record<number, string>>({})
@@ -127,13 +147,6 @@ export function MultiplicationAreaModel({
     const digits = value.replace(/\s/g, "")
     // Pad with leading spaces for right alignment
     return digits.padStart(totalCells, " ")
-  }
-
-  // Helper to extract just the number from a right-aligned DigitGrid string
-  const fromRightAlignedString = (value: string): string => {
-    if (!value) return ""
-    // Remove all spaces
-    return value.replace(/\s/g, "")
   }
 
   // Get row input values - use additionGridInputs if available, otherwise convert from cellInputs
@@ -277,7 +290,6 @@ export function MultiplicationAreaModel({
             onComplete={(isCorrect, additionInputs) => {
               if (onComplete) {
                 const userInputs: MultiplicationAreaModelUserInputs = {
-                  cellInputs,
                   additionInputs,
                 }
                 onComplete(isCorrect, userInputs)
