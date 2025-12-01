@@ -13,6 +13,7 @@ export interface MultiplicationAreaModelProps {
   multiplier: number
   initialUserInputs?: MultiplicationAreaModelUserInputs
   onComplete?: (isCorrect: boolean, userInputs?: MultiplicationAreaModelUserInputs) => void
+  onStateChange?: (userInputs?: MultiplicationAreaModelUserInputs) => void
   showValidation?: boolean
   showAllCells?: boolean
   className?: string
@@ -31,6 +32,7 @@ export function MultiplicationAreaModel({
   multiplier,
   initialUserInputs,
   onComplete,
+  onStateChange,
   showValidation = true,
   showAllCells = false,
   className,
@@ -293,6 +295,14 @@ export function MultiplicationAreaModel({
                   additionInputs,
                 }
                 onComplete(isCorrect, userInputs)
+              }
+            }}
+            onStateChange={(additionInputs) => {
+              if (onStateChange) {
+                const userInputs: MultiplicationAreaModelUserInputs = {
+                  additionInputs,
+                }
+                onStateChange(userInputs)
               }
             }}
             showValidation={showValidation}

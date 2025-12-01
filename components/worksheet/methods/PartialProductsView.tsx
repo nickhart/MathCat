@@ -7,6 +7,7 @@ export interface PartialProductsViewProps {
   multiplier: number
   initialUserInputs?: any
   onComplete?: (isCorrect: boolean, userInputs?: any) => void
+  onStateChange?: (userInputs?: any) => void
   showValidation?: boolean
   showAllCells?: boolean
 }
@@ -16,6 +17,7 @@ export function PartialProductsView({
   multiplier,
   initialUserInputs,
   onComplete,
+  onStateChange,
   showValidation = true,
   showAllCells = false,
 }: PartialProductsViewProps) {
@@ -25,6 +27,7 @@ export function PartialProductsView({
       multiplier={multiplier}
       initialUserInputs={initialUserInputs}
       onComplete={onComplete}
+      onStateChange={onStateChange}
       showValidation={showValidation}
       showAllCells={showAllCells}
     />

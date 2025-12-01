@@ -7,6 +7,7 @@ export interface AreaModelViewProps {
   multiplier: number
   initialUserInputs?: any
   onComplete?: (isCorrect: boolean, userInputs?: any) => void
+  onStateChange?: (userInputs?: any) => void
   showValidation?: boolean
   showAllCells?: boolean
 }
@@ -16,6 +17,7 @@ export function AreaModelView({
   multiplier,
   initialUserInputs,
   onComplete,
+  onStateChange,
   showValidation = true,
   showAllCells = false,
 }: AreaModelViewProps) {
@@ -25,6 +27,7 @@ export function AreaModelView({
       multiplier={multiplier}
       initialUserInputs={initialUserInputs}
       onComplete={onComplete}
+      onStateChange={onStateChange}
       showValidation={showValidation}
       showAllCells={showAllCells}
     />

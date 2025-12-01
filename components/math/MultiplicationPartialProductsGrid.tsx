@@ -15,6 +15,7 @@ export interface MultiplicationPartialProductsGridProps {
     isCorrect: boolean,
     userInputs?: MultiplicationPartialProductsGridUserInputs
   ) => void
+  onStateChange?: (userInputs?: MultiplicationPartialProductsGridUserInputs) => void
   showValidation?: boolean
   showAllCells?: boolean
   className?: string
@@ -25,6 +26,7 @@ export function MultiplicationPartialProductsGrid({
   multiplier,
   initialUserInputs,
   onComplete,
+  onStateChange,
   showValidation = true,
   showAllCells = false,
   className,
@@ -87,6 +89,14 @@ export function MultiplicationPartialProductsGrid({
                 additionInputs,
               }
               onComplete(isCorrect, userInputs)
+            }
+          }}
+          onStateChange={(additionInputs) => {
+            if (onStateChange) {
+              const userInputs: MultiplicationPartialProductsGridUserInputs = {
+                additionInputs,
+              }
+              onStateChange(userInputs)
             }
           }}
           showValidation={showValidation}

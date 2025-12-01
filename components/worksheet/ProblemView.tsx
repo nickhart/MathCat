@@ -19,6 +19,7 @@ export interface ProblemViewProps {
   nextProblemId?: string | null
   isProblemComplete?: boolean
   onComplete?: (isCorrect: boolean, method: SolvingMethod, userInputs?: any) => void
+  onStateChange?: (method: SolvingMethod, userInputs?: any) => void
   onMethodChange?: (method: SolvingMethod) => void
 }
 
@@ -32,6 +33,7 @@ export function ProblemView({
   nextProblemId,
   isProblemComplete,
   onComplete,
+  onStateChange,
   onMethodChange,
 }: ProblemViewProps) {
   const [selectedMethod, setSelectedMethod] = useState<SolvingMethod>(
@@ -46,6 +48,12 @@ export function ProblemView({
   const handleProblemComplete = (isCorrect: boolean, userInputs?: any) => {
     if (onComplete) {
       onComplete(isCorrect, selectedMethod, userInputs)
+    }
+  }
+
+  const handleStateChange = (userInputs?: any) => {
+    if (onStateChange) {
+      onStateChange(selectedMethod, userInputs)
     }
   }
 
@@ -118,6 +126,7 @@ export function ProblemView({
           settings={settings}
           initialUserInputs={initialUserInputs}
           onComplete={handleProblemComplete}
+          onStateChange={handleStateChange}
         />
 
         {/* Navigation Controls */}
@@ -161,6 +170,7 @@ interface ProblemMethodViewProps {
   settings: WorksheetSettings
   initialUserInputs?: any
   onComplete?: (isCorrect: boolean, userInputs?: any) => void
+  onStateChange?: (userInputs?: any) => void
 }
 
 function ProblemMethodView({
@@ -169,6 +179,7 @@ function ProblemMethodView({
   settings,
   initialUserInputs,
   onComplete,
+  onStateChange,
 }: ProblemMethodViewProps) {
   if (problem.operation !== "multiplication") {
     return (
@@ -188,6 +199,7 @@ function ProblemMethodView({
           multiplier={multiplier}
           initialUserInputs={initialUserInputs}
           onComplete={onComplete}
+          onStateChange={onStateChange}
           showValidation={settings.showValidation}
           showAllCells={settings.showAllCells}
         />
@@ -200,6 +212,7 @@ function ProblemMethodView({
           multiplier={multiplier}
           initialUserInputs={initialUserInputs}
           onComplete={onComplete}
+          onStateChange={onStateChange}
           showValidation={settings.showValidation}
           showAllCells={settings.showAllCells}
         />

@@ -32,6 +32,8 @@ export interface AdditionGridProps {
   initialUserInputs?: AdditionGridUserInputs
   /** Callback when user completes the problem */
   onComplete?: (isCorrect: boolean, userInputs: AdditionGridUserInputs) => void
+  /** Callback when any state changes (for continuous saving) */
+  onStateChange?: (userInputs: AdditionGridUserInputs) => void
   /** Show validation feedback (green/red borders) */
   showValidation?: boolean
   /** Show all cells instead of using spacers for leading zeros */
@@ -51,6 +53,7 @@ export function AdditionGrid({
   expectedSum,
   initialUserInputs,
   onComplete,
+  onStateChange,
   showValidation = true,
   showAllCells = false,
   className,
@@ -133,6 +136,18 @@ export function AdditionGrid({
       lastCompletionState.current = null
     }
   }, [inputs, sumInput, rows, expectedSum, rowInputValues])
+
+  // Call onStateChange whenever state changes (for continuous saving)
+  useEffect(() => {
+    if (onStateChange) {
+      const userInputs: AdditionGridUserInputs = {
+        inputs,
+        carryDigits,
+        sumInput,
+      }
+      onStateChange(userInputs)
+    }
+  }, [inputs, carryDigits, sumInput, onStateChange])
 
   const handleInputChange = (index: number, value: string) => {
     if (onRowInputChange) {

@@ -90,6 +90,38 @@ export default function SharedWorksheetProblemPage() {
     setProgress(updatedProgress)
   }
 
+  const handleStateChange = (method: SolvingMethod, userInputs?: any) => {
+    if (!progress || !problem || !worksheet) return
+
+    // Find which section this problem belongs to
+    const section = worksheet.sections?.find((s) => s.problems.some((p) => p.id === problemId))
+    const sectionProblemIds = section?.problems.map((p) => p.id)
+
+    // Get existing state or create new one
+    const existingState = progress.problemStates[problemId]
+    const problemState: ProblemState = {
+      ...existingState,
+      problemId: problem.id,
+      currentMethod: method,
+      userInputs: userInputs || {},
+      isComplete: existingState?.isComplete || false,
+      isCorrect: existingState?.isCorrect,
+    }
+
+    // Update progress
+    const updatedProgress = updateProblemState(
+      progress,
+      problemId,
+      problemState,
+      section?.id,
+      sectionProblemIds
+    )
+
+    // Save progress
+    saveWorksheetProgress(updatedProgress)
+    setProgress(updatedProgress)
+  }
+
   const handleComplete = (isCorrect: boolean, method: SolvingMethod, userInputs?: any) => {
     if (!progress || !problem || !worksheet) return
 
@@ -178,6 +210,7 @@ export default function SharedWorksheetProblemPage() {
         nextProblemId={nextProblemId}
         isProblemComplete={isProblemComplete}
         onComplete={handleComplete}
+        onStateChange={handleStateChange}
         onMethodChange={handleMethodChange}
       />
       <SectionComplete
